@@ -8,9 +8,10 @@ async function checkPin() {
   const enteredPin = document.getElementById("pin").value;
 
   const { data, error } = await supabaseClient
-    .from("settings")
-    .select("value")
-    .eq("key", "album_pin")
+  .from("settings")
+  .select("value")
+  .eq("key", "album_pin")
+  .single();
 
 
   if (error) {
@@ -19,7 +20,6 @@ async function checkPin() {
   return;
 }
 
-alert(JSON.stringify(data));
 
   if (enteredPin === data.value) {
 
