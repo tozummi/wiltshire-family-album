@@ -15,7 +15,7 @@ async function checkPin() {
 
   if (error) {
     console.log(error);
-    alert("Something went wrong");
+    alert(error.message);
     return;
   }
 
