@@ -27,3 +27,13 @@ button {
   border: none;
   cursor: pointer;
 }
+.pin-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.pin-wrapper button {
+  background: transparent;
+  padding: 8px;
+}
