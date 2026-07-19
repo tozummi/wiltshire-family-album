@@ -13,7 +13,10 @@
 
   <div id="login-box">
     <p>Enter family code</p>
-    <input id="pin" type="password" placeholder="PIN">
+    <div class="pin-wrapper">
+  <input id="pin" type="password" placeholder="PIN">
+  <button type="button" onclick="togglePin()">👁️</button>
+</div>
     <button onclick="checkPin()">Enter</button>
   </div>
 
