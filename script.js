@@ -11,13 +11,15 @@ async function checkPin() {
     .from("settings")
     .select("value")
     .eq("key", "album_pin")
-    .single();
+
 
   if (error) {
-    console.log(error);
-    alert(error.message);
-    return;
-  }
+  console.log(error);
+  alert(error.message);
+  return;
+}
+
+alert(JSON.stringify(data));
 
   if (enteredPin === data.value) {
 
