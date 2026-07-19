@@ -31,3 +31,12 @@ async function checkPin() {
   }
 
 }
+function togglePin() {
+  const pinInput = document.getElementById("pin");
+
+  if (pinInput.type === "password") {
+    pinInput.type = "text";
+  } else {
+    pinInput.type = "password";
+  }
+}
