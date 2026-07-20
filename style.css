@@ -261,17 +261,19 @@ button {
 }
 
 #viewer-uploader {
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+#viewer-caption {
+  margin: 8px 0 0;
+  max-width: 70vw;
+  color: white;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 #viewer-date {
-  opacity: 0.85;
-}
-#viewer-caption {
-  margin: 6px 0 0;
-  max-width: 70vw;
-  color: white;
-  font-size: 15px;
-  font-weight: normal;
-  line-height: 1.4;
+  font-size: 14px;
+  opacity: 0.8;
 }
