@@ -24,7 +24,7 @@ async function checkPin() {
   if (enteredPin === data.value) {
 
     document.getElementById("login-box").style.display = "none";
-    document.getElementById("album").style.display = "block";
+    document.getElementById("name-selection").style.display = "block";
 
   } else {
 
