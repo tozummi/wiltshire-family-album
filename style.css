@@ -98,3 +98,14 @@ button {
 #continue-btn:active:not(:disabled) {
   transform: scale(0.98);
 }
+#upload-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: #8b6f47;
+  color: white;
+  font-family: inherit;
+  font-size: 16px;
+}
