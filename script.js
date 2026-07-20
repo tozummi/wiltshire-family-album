@@ -267,8 +267,10 @@ async function loadGallery() {
   const viewerImage = document.getElementById("viewer-image");
 
   viewerImage.src = photo.image_url;
-  viewer.hidden = false;
-  viewer.classList.add("open");
+viewer.hidden = false;
+viewer.classList.add("open");
+
+history.pushState({ photoViewer: true }, "");
 };
     gallery.appendChild(card);
   });
