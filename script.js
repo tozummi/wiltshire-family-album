@@ -163,9 +163,24 @@ if (data.secure_url) {
 async function loadGallery() {
 
   const { data, error } = await supabaseClient
-    .from("photos")
-    .select("image_url, user_name, created_at")
-    .order("created_at", { ascending: false });
+  .from("photos")
+  .select(`
+    id,
+    image_url,
+    user_id,
+    user_name,
+    status,
+    created_at,
+    cloudinary_id,
+    uploader:family_members (
+      name,
+      initials,
+      colour,
+      is_admin
+    )
+  `)
+  .eq("status", "approved")
+  .order("created_at", { ascending: false });
 
   if (error) {
     console.log(error);
