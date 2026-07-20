@@ -65,6 +65,7 @@ function continueToAlbum() {
 
   console.log("Current user:", currentUser);
 }
+document.getElementById("continue-btn").onclick = continueToAlbum;
 
 async function checkPin() {
 
