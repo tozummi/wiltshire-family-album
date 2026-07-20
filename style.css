@@ -240,3 +240,10 @@ button {
 #toast.error {
   background: #a63d40;
 }
+.gallery-message {
+  width: 100%;
+  margin: 30px 0;
+  text-align: center;
+  font-size: 16px;
+  opacity: 0.7;
+}
