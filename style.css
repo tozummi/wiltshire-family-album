@@ -299,3 +299,22 @@ button {
   opacity: 0.85;
   text-align: right;
 }
+@media (max-width: 600px) {
+  #viewer-details {
+    padding: 80px 18px 20px;
+    gap: 14px;
+  }
+
+  #viewer-uploader {
+    font-size: 17px;
+  }
+
+  #viewer-caption {
+    max-width: 65vw;
+    font-size: 16px;
+  }
+
+  #viewer-date {
+    font-size: 14px;
+  }
+}
