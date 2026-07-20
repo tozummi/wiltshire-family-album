@@ -317,10 +317,20 @@ if (data.length === 0) {
     `;
 
     card.onclick = () => {
-      const viewerImage =
-        document.getElementById("viewer-image");
+  const viewerImage =
+    document.getElementById("viewer-image");
 
-      viewerImage.src = photo.image_url;
+  const viewerUploader =
+    document.getElementById("viewer-uploader");
+
+  const viewerDate =
+    document.getElementById("viewer-date");
+
+  viewerImage.src = photo.image_url;
+  viewerUploader.textContent = `📸 ${uploaderName}`;
+
+  viewerDate.textContent =
+    new Date(photo.created_at).toLocaleDateString("en-GB");
       viewer.hidden = false;
       viewer.classList.add("open");
 
