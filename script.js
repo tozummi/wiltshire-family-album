@@ -8,6 +8,7 @@ const CLOUDINARY_UPLOAD_PRESET = "family_album_upload";
 
 let selectedMember = null;
 let currentUser = null;
+const savedUser = localStorage.getItem("familyAlbumUser");
 
 function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
@@ -88,6 +89,10 @@ function continueToAlbum() {
   if (!selectedMember) return;
 
   currentUser = selectedMember;
+  localStorage.setItem(
+  "familyAlbumUser",
+  JSON.stringify(currentUser)
+);
 
   document.getElementById("name-selection").style.display = "none";
   document.getElementById("album").style.display = "block";
@@ -99,7 +104,26 @@ function continueToAlbum() {
 
   loadGallery();
 }
+function restoreSavedUser() {
+  if (!savedUser) return;
 
+  try {
+    currentUser = JSON.parse(savedUser);
+    selectedMember = currentUser;
+
+    document.getElementById("login-box").style.display = "none";
+    document.getElementById("name-selection").style.display = "none";
+    document.getElementById("album").style.display = "block";
+
+    document.getElementById("welcome-message").textContent =
+      `Welcome, ${currentUser.name} 📸`;
+
+    loadGallery();
+  } catch (error) {
+    localStorage.removeItem("familyAlbumUser");
+    console.log("Could not restore saved user:", error);
+  }
+}
 document.getElementById("continue-btn").onclick = continueToAlbum;
 
 async function checkPin() {
@@ -376,3 +400,4 @@ window.addEventListener("popstate", () => {
     closeViewer();
   }
 });
+restoreSavedUser();
