@@ -448,4 +448,30 @@ window.addEventListener("popstate", () => {
     closeViewer();
   }
 });
+const editCaptionButton =
+  document.getElementById("edit-caption-btn");
+
+const captionEditor =
+  document.getElementById("caption-editor");
+
+const captionInput =
+  document.getElementById("caption-input");
+
+const cancelCaptionButton =
+  document.getElementById("cancel-caption-btn");
+
+editCaptionButton.onclick = () => {
+  captionInput.value = currentPhotoCaption;
+
+  captionEditor.hidden = false;
+  editCaptionButton.hidden = true;
+
+  captionInput.focus();
+};
+
+cancelCaptionButton.onclick = () => {
+  captionEditor.hidden = true;
+  editCaptionButton.hidden =
+    currentPhotoUploaderId !== currentUser.id;
+};
 restoreSavedUser();
