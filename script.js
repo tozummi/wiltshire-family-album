@@ -9,6 +9,20 @@ const CLOUDINARY_UPLOAD_PRESET = "family_album_upload";
 let selectedMember = null;
 let currentUser = null;
 
+function showToast(message, type = "success") {
+  const toast = document.getElementById("toast");
+
+  toast.textContent = message;
+  toast.className = "";
+  toast.classList.add(type, "show");
+
+  clearTimeout(toast.hideTimer);
+
+  toast.hideTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
 function getTextColour(hex) {
   const r = parseInt(hex.substring(1, 3), 16);
   const g = parseInt(hex.substring(3, 5), 16);
@@ -187,14 +201,14 @@ photoInput.onchange = async event => {
 
     await loadGallery(newPhoto.id);
 
-    alert("Photo uploaded successfully!");
+    showToast("Photo uploaded successfully! 📸");
   } catch (error) {
     console.log("UPLOAD ERROR:", error);
 
-    alert(
-      error.message ||
-      "Something went wrong while uploading."
-    );
+    showToast(
+  error.message || "Something went wrong while uploading.",
+  "error"
+);
   } finally {
     uploadButton.disabled = false;
     uploadButton.textContent = "Upload Photo 📸";
