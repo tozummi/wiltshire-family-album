@@ -105,6 +105,13 @@ document.getElementById("continue-btn").onclick = continueToAlbum;
 async function checkPin() {
   const enteredPin = document.getElementById("pin").value;
 
+  const gallery = document.getElementById("gallery");
+
+gallery.innerHTML = `
+  <p class="gallery-message">
+    Loading memories... 📸
+  </p>
+`;
   const { data, error } = await supabaseClient
     .from("settings")
     .select("value")
@@ -241,10 +248,17 @@ async function loadGallery(newPhotoId = null) {
     return;
   }
 
-  const gallery = document.getElementById("gallery");
-
   gallery.innerHTML = "";
 
+if (data.length === 0) {
+  gallery.innerHTML = `
+    <p class="gallery-message">
+      No memories have been added yet 📸
+    </p>
+  `;
+
+  return;
+}
   data.forEach(photo => {
     const uploader = photo.uploader;
 
