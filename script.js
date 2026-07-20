@@ -112,3 +112,10 @@ function togglePin() {
 document.getElementById("upload-btn").onclick = () => {
   document.getElementById("photo-input").click();
 };
+document.getElementById("photo-input").onchange = (event) => {
+  const file = event.target.files[0];
+
+  if (file) {
+    console.log("Selected photo:", file.name);
+  }
+};
