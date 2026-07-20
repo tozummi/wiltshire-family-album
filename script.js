@@ -4,6 +4,7 @@ const supabaseClient = supabase.createClient(
 );
 
 let selectedMember = null;
+let currentUser = null;
 function getTextColour(hex) {
   const r = parseInt(hex.substring(1, 3), 16);
   const g = parseInt(hex.substring(3, 5), 16);
