@@ -284,6 +284,7 @@ async function loadGallery(newPhotoId = null) {
       user_name,
       status,
       created_at,
+      caption,
       cloudinary_id,
       uploader:family_members (
         name,
@@ -379,6 +380,10 @@ if (data.length === 0) {
     document.getElementById("viewer-date");
 
   viewerImage.src = photo.image_url;
+  const viewerCaption =
+  document.getElementById("viewer-caption");
+
+viewerCaption.textContent = photo.caption || "";
   viewerUploader.textContent = `📸 ${uploaderName}`;
 
   viewerDate.textContent =
