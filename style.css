@@ -167,16 +167,21 @@ button {
 .photo-viewer {
   position: fixed;
   inset: 0;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   background: rgba(0, 0, 0, 0.94);
   z-index: 9999;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
 }
 
 .photo-viewer.open {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
 }
 
 #viewer-image {
