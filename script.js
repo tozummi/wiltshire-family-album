@@ -158,3 +158,35 @@ if (data.secure_url) {
 }
 
 };
+async function loadGallery() {
+
+  const { data, error } = await supabaseClient
+    .from("photos")
+    .select("image_url, uploader_name, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.log(error);
+    alert(error.message);
+    return;
+  }
+
+  const gallery = document.getElementById("gallery");
+
+  gallery.innerHTML = "";
+
+  data.forEach(photo => {
+
+    const card = document.createElement("div");
+
+    card.className = "photo-card";
+
+    card.innerHTML = `
+      <img src="${photo.image_url}">
+      <p>Uploaded by ${photo.uploader_name}</p>
+    `;
+
+    gallery.appendChild(card);
+
+  });
+}
