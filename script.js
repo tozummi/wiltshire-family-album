@@ -184,9 +184,10 @@ async function loadGallery() {
     card.className = "photo-card";
 
     card.innerHTML = `
-      <img src="${photo.image_url}">
-      <p>Uploaded by ${photo.user_name}</p>
-    `;
+  <img src="${photo.image_url}">
+  <p>📸 ${photo.user_name}</p>
+  <small>${new Date(photo.created_at).toLocaleDateString()}</small>
+`;
 
     gallery.appendChild(card);
 
