@@ -134,5 +134,25 @@ document.getElementById("photo-input").onchange = async (event) => {
 
   const data = await response.json();
 
-  console.log("Cloudinary result:", data);
-};
+console.log("Cloudinary result:", data);
+
+if (data.secure_url) {
+
+  const { error } = await supabaseClient
+    .from("photos")
+    .insert({
+      image_url: data.secure_url,
+      cloudinary_id: data.public_id,
+      user_id: currentUser.id,
+      user_name: currentUser.name,
+      status: "approved"
+    });
+
+  if (error) {
+    console.log(error);
+    alert(error.message);
+    return;
+  }
+
+  alert("Photo uploaded successfully!");
+}
