@@ -6,6 +6,7 @@ const supabaseClient = supabase.createClient(
 const CLOUDINARY_CLOUD_NAME = "x58975lj";
 const CLOUDINARY_UPLOAD_PRESET = "family_album_upload";
 
+let currentUserReaction = null;
 let currentPhotoId = null;
 let currentPhotoUploaderId = null;
 let currentPhotoCaption = "";
@@ -394,6 +395,8 @@ currentPhotoId = photo.id;
 currentPhotoUploaderId = photo.user_id;
 currentPhotoCaption = photo.caption || "";
 
+loadCurrentReaction();
+
 editCaptionButton.hidden =
   photo.user_id !== currentUser.id;
 
@@ -521,5 +524,38 @@ saveCaptionButton.onclick = async () => {
 
   await loadGallery();
 };
+
+const reactionButtons =
+  document.querySelectorAll("#reaction-bar button");
+
+async function loadCurrentReaction() {
+  reactionButtons.forEach(button => {
+    button.classList.remove("selected");
+  });
+
+  currentUserReaction = null;
+
+  const { data, error } = await supabaseClient
+    .from("photo_reactions")
+    .select("reaction")
+    .eq("photo_id", currentPhotoId)
+    .eq("user_id", currentUser.id)
+    .maybeSingle();
+
+  if (error) {
+    console.log("REACTION LOAD ERROR:", error);
+    return;
+  }
+
+  if (!data) return;
+
+  currentUserReaction = data.reaction;
+
+  const selectedButton = document.querySelector(
+    `#reaction-bar button[data-reaction="${currentUserReaction}"]`
+  );
+
+  selectedButton?.classList.add("selected");
+}
 
 restoreSavedUser();
