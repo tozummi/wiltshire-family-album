@@ -109,3 +109,6 @@ function togglePin() {
     pinInput.type = "password";
   }
 }
+document.getElementById("upload-btn").onclick = () => {
+  document.getElementById("photo-input").click();
+};
