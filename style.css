@@ -338,3 +338,65 @@ button {
 
   cursor: pointer;
 }
+
+#caption-editor {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 4;
+
+  padding: 14px;
+
+  border-radius: 14px;
+
+  background: white;
+
+  box-sizing: border-box;
+}
+
+#caption-input {
+  width: 100%;
+  min-height: 90px;
+
+  padding: 11px;
+
+  border: 1px solid #cccccc;
+  border-radius: 10px;
+
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.caption-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  margin-top: 10px;
+}
+
+.caption-actions button {
+  padding: 9px 15px;
+
+  border: none;
+  border-radius: 9px;
+
+  font: inherit;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+#cancel-caption-btn {
+  background: #eeeeee;
+}
+
+#save-caption-btn {
+  background: #222222;
+  color: white;
+}
