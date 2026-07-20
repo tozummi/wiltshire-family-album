@@ -156,25 +156,28 @@ photoInput.onchange = async event => {
       }
     );
 
-    const data = await response.json();
+    const cloudinaryData = await response.json();
 
-    console.log("Cloudinary result:", data);
+    console.log("Cloudinary result:", cloudinaryData);
 
-    if (!data.secure_url) {
+    if (!cloudinaryData.secure_url) {
       throw new Error(
-        data.error?.message || "The photo could not be uploaded."
+        cloudinaryData.error?.message ||
+        "The photo could not be uploaded."
       );
     }
 
-    const { error } = await supabaseClient
+    const { data: newPhoto, error } = await supabaseClient
       .from("photos")
       .insert({
-        image_url: data.secure_url,
-        cloudinary_id: data.public_id,
+        image_url: cloudinaryData.secure_url,
+        cloudinary_id: cloudinaryData.public_id,
         user_id: currentUser.id,
         user_name: currentUser.name,
         status: "approved"
-      });
+      })
+      .select("id")
+      .single();
 
     if (error) {
       throw error;
@@ -182,19 +185,23 @@ photoInput.onchange = async event => {
 
     event.target.value = "";
 
-    await loadGallery();
+    await loadGallery(newPhoto.id);
 
     alert("Photo uploaded successfully!");
   } catch (error) {
     console.log("UPLOAD ERROR:", error);
-    alert(error.message || "Something went wrong while uploading.");
+
+    alert(
+      error.message ||
+      "Something went wrong while uploading."
+    );
   } finally {
     uploadButton.disabled = false;
     uploadButton.textContent = "Upload Photo 📸";
   }
 };
 
-async function loadGallery() {
+async function loadGallery(newPhotoId = null) {
   const { data, error } = await supabaseClient
     .from("photos")
     .select(`
@@ -234,6 +241,7 @@ async function loadGallery() {
     const card = document.createElement("div");
 
     card.className = "photo-card";
+    card.dataset.photoId = photo.id;
 
     card.innerHTML = `
       <div
@@ -281,8 +289,8 @@ async function loadGallery() {
     `;
 
     card.onclick = () => {
-      const viewer = document.getElementById("photo-viewer");
-      const viewerImage = document.getElementById("viewer-image");
+      const viewerImage =
+        document.getElementById("viewer-image");
 
       viewerImage.src = photo.image_url;
       viewer.hidden = false;
@@ -293,6 +301,21 @@ async function loadGallery() {
 
     gallery.appendChild(card);
   });
+
+  if (newPhotoId) {
+    requestAnimationFrame(() => {
+      const newPhotoCard = gallery.querySelector(
+        `[data-photo-id="${newPhotoId}"]`
+      );
+
+      if (newPhotoCard) {
+        newPhotoCard.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }
+    });
+  }
 }
 
 const viewer = document.getElementById("photo-viewer");
