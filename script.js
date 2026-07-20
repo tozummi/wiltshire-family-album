@@ -460,6 +460,9 @@ const captionInput =
 const cancelCaptionButton =
   document.getElementById("cancel-caption-btn");
 
+const saveCaptionButton =
+  document.getElementById("save-caption-btn");
+
 editCaptionButton.onclick = () => {
   captionInput.value = currentPhotoCaption;
 
@@ -474,4 +477,44 @@ cancelCaptionButton.onclick = () => {
   editCaptionButton.hidden =
     currentPhotoUploaderId !== currentUser.id;
 };
+
+saveCaptionButton.onclick = async () => {
+  const newCaption = captionInput.value.trim();
+
+  saveCaptionButton.disabled = true;
+  saveCaptionButton.textContent = "Saving...";
+
+  const { error } = await supabaseClient
+    .from("photos")
+    .update({
+      caption: newCaption || null
+    })
+    .eq("id", currentPhotoId)
+    .eq("user_id", currentUser.id);
+
+  saveCaptionButton.disabled = false;
+  saveCaptionButton.textContent = "Save";
+
+  if (error) {
+    console.log("CAPTION ERROR:", error);
+    showToast("The caption could not be saved.", "error");
+    return;
+  }
+
+  currentPhotoCaption = newCaption;
+
+  document.getElementById("viewer-caption").textContent =
+    currentPhotoCaption;
+
+  editCaptionButton.textContent =
+    currentPhotoCaption ? "Edit caption" : "Add caption";
+
+  captionEditor.hidden = true;
+  editCaptionButton.hidden = false;
+
+  showToast("Caption saved ✏️");
+
+  await loadGallery();
+};
+
 restoreSavedUser();
