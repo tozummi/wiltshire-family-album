@@ -267,3 +267,11 @@ button {
 #viewer-date {
   opacity: 0.85;
 }
+#viewer-caption {
+  margin: 6px 0 0;
+  max-width: 70vw;
+  color: white;
+  font-size: 15px;
+  font-weight: normal;
+  line-height: 1.4;
+}
