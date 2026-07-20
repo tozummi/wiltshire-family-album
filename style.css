@@ -37,35 +37,42 @@ button {
   background: transparent;
   padding: 8px;
 }
+
 .member-button {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 14px;
-  border: 1px solid #ddd;
-  background: white;
+  gap: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  border: 1px solid #e5e0d8;
+  background: #ffffff;
   font-family: inherit;
   font-size: 16px;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.member-button:active {
+  transform: scale(0.98);
 }
 
 .member-button.selected {
-  border: 2px solid #333;
-  background: #f1f1f1;
+  border: 2px solid #8b6f47;
+  background: #f5efe6;
   transform: scale(1.02);
 }
 
 .avatar {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 15px;
+  flex-shrink: 0;
 }
