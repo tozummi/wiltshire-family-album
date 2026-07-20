@@ -62,6 +62,8 @@ function continueToAlbum() {
 
   document.getElementById("name-selection").style.display = "none";
   document.getElementById("album").style.display = "block";
+  document.getElementById("welcome-message").textContent =
+  `Welcome, ${currentUser.name} 📸`;
 
   console.log("Current user:", currentUser);
 }
