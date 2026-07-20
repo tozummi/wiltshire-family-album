@@ -2,7 +2,8 @@ const supabaseClient = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
-
+const CLOUDINARY_CLOUD_NAME = "x58975lj";
+const CLOUDINARY_UPLOAD_PRESET = "family_album_upload";
 let selectedMember = null;
 let currentUser = null;
 function getTextColour(hex) {
@@ -112,10 +113,26 @@ function togglePin() {
 document.getElementById("upload-btn").onclick = () => {
   document.getElementById("photo-input").click();
 };
-document.getElementById("photo-input").onchange = (event) => {
+document.getElementById("photo-input").onchange = async (event) => {
   const file = event.target.files[0];
 
-  if (file) {
-    console.log("Selected photo:", file.name);
-  }
+  if (!file) return;
+
+  console.log("Uploading:", file.name);
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    {
+      method: "POST",
+      body: formData
+    }
+  );
+
+  const data = await response.json();
+
+  console.log("Cloudinary result:", data);
 };
