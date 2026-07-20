@@ -67,6 +67,7 @@ function continueToAlbum() {
   `Welcome, ${currentUser.name} 📸`;
 
   console.log("Current user:", currentUser);
+  loadGallery();
 }
 document.getElementById("continue-btn").onclick = continueToAlbum;
 
