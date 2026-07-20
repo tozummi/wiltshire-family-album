@@ -6,6 +6,9 @@ const supabaseClient = supabase.createClient(
 const CLOUDINARY_CLOUD_NAME = "x58975lj";
 const CLOUDINARY_UPLOAD_PRESET = "family_album_upload";
 
+let currentPhotoId = null;
+let currentPhotoUploaderId = null;
+let currentPhotoCaption = "";
 let selectedMember = null;
 let currentUser = null;
 const savedUser = localStorage.getItem("familyAlbumUser");
@@ -384,6 +387,18 @@ if (data.length === 0) {
   document.getElementById("viewer-caption");
 
 viewerCaption.textContent = photo.caption || "";
+      const editCaptionButton =
+  document.getElementById("edit-caption-btn");
+
+currentPhotoId = photo.id;
+currentPhotoUploaderId = photo.user_id;
+currentPhotoCaption = photo.caption || "";
+
+editCaptionButton.hidden =
+  photo.user_id !== currentUser.id;
+
+editCaptionButton.textContent =
+  currentPhotoCaption ? "Edit caption" : "Add caption";
   viewerUploader.textContent = `📸 ${uploaderName}`;
 
   viewerDate.textContent =
