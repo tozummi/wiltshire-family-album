@@ -156,3 +156,5 @@ if (data.secure_url) {
 
   alert("Photo uploaded successfully!");
 }
+
+};
