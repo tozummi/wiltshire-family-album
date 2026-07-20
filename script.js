@@ -123,35 +123,49 @@ function togglePin() {
   }
 }
 
-document.getElementById("upload-btn").onclick = () => {
-  document.getElementById("photo-input").click();
+const uploadButton = document.getElementById("upload-btn");
+const photoInput = document.getElementById("photo-input");
+
+uploadButton.onclick = () => {
+  if (!uploadButton.disabled) {
+    photoInput.click();
+  }
 };
 
-document.getElementById("photo-input").onchange = async event => {
+photoInput.onchange = async event => {
   const file = event.target.files[0];
 
   if (!file) return;
 
+  uploadButton.disabled = true;
+  uploadButton.textContent = "⏳ Uploading your memory...";
+
   console.log("Uploading:", file.name);
 
-  const formData = new FormData();
+  try {
+    const formData = new FormData();
 
-  formData.append("file", file);
-  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-    {
-      method: "POST",
-      body: formData
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const data = await response.json();
+
+    console.log("Cloudinary result:", data);
+
+    if (!data.secure_url) {
+      throw new Error(
+        data.error?.message || "The photo could not be uploaded."
+      );
     }
-  );
 
-  const data = await response.json();
-
-  console.log("Cloudinary result:", data);
-
-  if (data.secure_url) {
     const { error } = await supabaseClient
       .from("photos")
       .insert({
@@ -163,16 +177,20 @@ document.getElementById("photo-input").onchange = async event => {
       });
 
     if (error) {
-      console.log(error);
-      alert(error.message);
-      return;
+      throw error;
     }
-
-    alert("Photo uploaded successfully!");
 
     event.target.value = "";
 
-    loadGallery();
+    await loadGallery();
+
+    alert("Photo uploaded successfully!");
+  } catch (error) {
+    console.log("UPLOAD ERROR:", error);
+    alert(error.message || "Something went wrong while uploading.");
+  } finally {
+    uploadButton.disabled = false;
+    uploadButton.textContent = "Upload Photo 📸";
   }
 };
 
@@ -263,18 +281,20 @@ async function loadGallery() {
     `;
 
     card.onclick = () => {
-  const viewer = document.getElementById("photo-viewer");
-  const viewerImage = document.getElementById("viewer-image");
+      const viewer = document.getElementById("photo-viewer");
+      const viewerImage = document.getElementById("viewer-image");
 
-  viewerImage.src = photo.image_url;
-viewer.hidden = false;
-viewer.classList.add("open");
+      viewerImage.src = photo.image_url;
+      viewer.hidden = false;
+      viewer.classList.add("open");
 
-history.pushState({ photoViewer: true }, "");
-};
+      history.pushState({ photoViewer: true }, "");
+    };
+
     gallery.appendChild(card);
   });
 }
+
 const viewer = document.getElementById("photo-viewer");
 
 function closeViewer() {
@@ -284,11 +304,12 @@ function closeViewer() {
 
 document.getElementById("close-viewer").onclick = closeViewer;
 
-viewer.onclick = (event) => {
+viewer.onclick = event => {
   if (event.target === viewer) {
     closeViewer();
   }
 };
+
 window.addEventListener("popstate", () => {
   if (!viewer.hidden) {
     closeViewer();
