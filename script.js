@@ -262,6 +262,20 @@ async function loadGallery() {
       </small>
     `;
 
+    card.onclick = () => {
+  const viewer = document.getElementById("photo-viewer");
+  const viewerImage = document.getElementById("viewer-image");
+
+  viewerImage.src = photo.image_url;
+  viewer.hidden = false;
+  viewer.classList.add("open");
+};
     gallery.appendChild(card);
   });
 }
+document.getElementById("close-viewer").onclick = () => {
+  const viewer = document.getElementById("photo-viewer");
+
+  viewer.classList.remove("open");
+  viewer.hidden = true;
+};
