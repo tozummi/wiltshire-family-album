@@ -178,71 +178,99 @@ uploadButton.onclick = () => {
 };
 
 photoInput.onchange = async event => {
-  const file = event.target.files[0];
+  const files = Array.from(event.target.files);
 
-  if (!file) return;
+  if (files.length === 0) return;
 
   uploadButton.disabled = true;
-  uploadButton.textContent = "⏳ Uploading your memory...";
 
-  console.log("Uploading:", file.name);
+  let uploadedCount = 0;
+  let failedCount = 0;
+  let newestPhotoId = null;
 
   try {
-    const formData = new FormData();
+    for (let index = 0; index < files.length; index++) {
+      const file = files[index];
 
-    formData.append("file", file);
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+      uploadButton.textContent =
+        `⏳ Uploading ${index + 1} of ${files.length}...`;
 
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-      {
-        method: "POST",
-        body: formData
+      try {
+        const formData = new FormData();
+
+        formData.append("file", file);
+        formData.append(
+          "upload_preset",
+          CLOUDINARY_UPLOAD_PRESET
+        );
+
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: "POST",
+            body: formData
+          }
+        );
+
+        const cloudinaryData = await response.json();
+
+        if (!cloudinaryData.secure_url) {
+          throw new Error(
+            cloudinaryData.error?.message ||
+            "The photo could not be uploaded."
+          );
+        }
+
+        const { data: newPhoto, error } =
+          await supabaseClient
+            .from("photos")
+            .insert({
+              image_url: cloudinaryData.secure_url,
+              cloudinary_id: cloudinaryData.public_id,
+              user_id: currentUser.id,
+              user_name: currentUser.name,
+              status: "approved"
+            })
+            .select("id")
+            .single();
+
+        if (error) {
+          throw error;
+        }
+
+        uploadedCount++;
+        newestPhotoId = newPhoto.id;
+      } catch (error) {
+        failedCount++;
+        console.log(
+          `UPLOAD ERROR FOR ${file.name}:`,
+          error
+        );
       }
-    );
-
-    const cloudinaryData = await response.json();
-
-    console.log("Cloudinary result:", cloudinaryData);
-
-    if (!cloudinaryData.secure_url) {
-      throw new Error(
-        cloudinaryData.error?.message ||
-        "The photo could not be uploaded."
-      );
-    }
-
-    const { data: newPhoto, error } = await supabaseClient
-      .from("photos")
-      .insert({
-        image_url: cloudinaryData.secure_url,
-        cloudinary_id: cloudinaryData.public_id,
-        user_id: currentUser.id,
-        user_name: currentUser.name,
-        status: "approved"
-      })
-      .select("id")
-      .single();
-
-    if (error) {
-      throw error;
     }
 
     event.target.value = "";
 
-    await loadGallery(newPhoto.id);
+    await loadGallery(newestPhotoId);
 
-    showToast("Photo uploaded successfully! 📸");
-  } catch (error) {
-    console.log("UPLOAD ERROR:", error);
-
-    showToast(
-  error.message || "Something went wrong while uploading.",
-  "error"
-);
+    if (uploadedCount > 0 && failedCount === 0) {
+      showToast(
+        `${uploadedCount} photo${uploadedCount === 1 ? "" : "s"} uploaded successfully! 📸`
+      );
+    } else if (uploadedCount > 0) {
+      showToast(
+        `${uploadedCount} uploaded, ${failedCount} failed.`,
+        "error"
+      );
+    } else {
+      showToast(
+        "None of the photos could be uploaded.",
+        "error"
+      );
+    }
   } finally {
     uploadButton.disabled = false;
-    uploadButton.textContent = "Upload Photo 📸";
+    uploadButton.textContent = "Upload Photos 📸";
   }
 };
 
