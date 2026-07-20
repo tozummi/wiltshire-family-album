@@ -4,7 +4,15 @@ const supabaseClient = supabase.createClient(
 );
 
 let selectedMember = null;
+function getTextColour(hex) {
+  const r = parseInt(hex.substring(1, 3), 16);
+  const g = parseInt(hex.substring(3, 5), 16);
+  const b = parseInt(hex.substring(5, 7), 16);
 
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  return brightness > 150 ? "#000000" : "#ffffff";
+}
 async function loadFamilyMembers() {
   const { data, error } = await supabaseClient
     .from("family_members")
@@ -25,9 +33,9 @@ async function loadFamilyMembers() {
     button.className = "member-button";
 
     button.innerHTML = `
-      <span class="avatar" style="background:${member.colour}">
-        ${member.initials}
-      </span>
+      <span class="avatar" style="background:${member.colour}; color:${getTextColour(member.colour)}">
+  ${member.initials}
+</span>
       <span>${member.name}</span>
     `;
 
