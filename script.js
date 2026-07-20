@@ -22,10 +22,10 @@ async function loadFamilyMembers() {
     .order("name");
 
   if (error) {
-    console.log(error);
-    alert(error.message);
-    return;
-  }
+  console.log("SUPABASE ERROR:", error);
+  alert("SUPABASE ERROR: " + error.message);
+  return;
+}
 
   const list = document.getElementById("family-list");
 
