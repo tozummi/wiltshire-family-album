@@ -484,18 +484,20 @@ saveCaptionButton.onclick = async () => {
   saveCaptionButton.disabled = true;
   saveCaptionButton.textContent = "Saving...";
 
-  const { error } = await supabaseClient
-    .from("photos")
-    .update({
-      caption: newCaption || null
-    })
-    .eq("id", currentPhotoId)
-    .eq("user_id", currentUser.id);
+  const { data: updatedPhoto, error } = await supabaseClient
+  .from("photos")
+  .update({
+    caption: newCaption || null
+  })
+  .eq("id", currentPhotoId)
+  .eq("user_id", currentUser.id)
+  .select("caption")
+  .single();
 
   saveCaptionButton.disabled = false;
   saveCaptionButton.textContent = "Save";
 
-  if (error) {
+  if (error || !updatedPhoto) {
     console.log("CAPTION ERROR:", error);
     showToast("The caption could not be saved.", "error");
     return;
