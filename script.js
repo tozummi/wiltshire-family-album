@@ -176,7 +176,6 @@ async function loadGallery() {
       name,
       initials,
       colour,
-      is_admin
     )
   `)
   .eq("status", "approved")
