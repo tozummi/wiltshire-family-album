@@ -54,6 +54,18 @@ async function loadFamilyMembers() {
     list.appendChild(button);
   });
 }
+
+function continueToAlbum() {
+  if (!selectedMember) return;
+
+  currentUser = selectedMember;
+
+  document.getElementById("name-selection").style.display = "none";
+  document.getElementById("album").style.display = "block";
+
+  console.log("Current user:", currentUser);
+}
+
 async function checkPin() {
 
   const enteredPin = document.getElementById("pin").value;
