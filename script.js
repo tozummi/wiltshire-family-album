@@ -289,3 +289,8 @@ viewer.onclick = (event) => {
     closeViewer();
   }
 };
+window.addEventListener("popstate", () => {
+  if (!viewer.hidden) {
+    closeViewer();
+  }
+});
