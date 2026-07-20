@@ -7,48 +7,70 @@
 
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <h1>🌿 Wiltshire Family Album</h1>
+    <h1>🌿 Wiltshire Family Album</h1>
 
-  <div id="login-box">
-    <p>Enter family code</p>
-    <div class="pin-wrapper">
-  <input id="pin" type="password" placeholder="PIN">
-  <button type="button" onclick="togglePin()">👁️</button>
-</div>
-    <button onclick="checkPin()">Enter</button>
+    <div id="login-box">
+      <p>Enter family code</p>
+
+      <div class="pin-wrapper">
+        <input id="pin" type="password" placeholder="PIN">
+
+        <button type="button" onclick="togglePin()">
+          👁️
+        </button>
+      </div>
+
+      <button onclick="checkPin()">
+        Enter
+      </button>
+    </div>
+
+    <div id="name-selection" style="display: none;">
+      <h2>Who's using the album?</h2>
+
+      <div id="family-list"></div>
+
+      <button id="continue-btn" disabled>
+        Continue
+      </button>
+    </div>
+
+    <div id="album" style="display: none;">
+      <h2 id="welcome-message"></h2>
+
+      <input
+        type="file"
+        id="photo-input"
+        accept="image/*"
+        hidden
+      >
+
+      <button id="upload-btn">
+        Upload Photo 📸
+      </button>
+
+      <div id="gallery"></div>
+    </div>
+
   </div>
 
-  <div id="name-selection" style="display:none;">
-  <h2>Who's using the album?</h2>
-  <div id="family-list"></div>
-  <button id="continue-btn" disabled>Continue</button>
-</div>
-  <div id="album" style="display:none;">
-    <h2 id="welcome-message"></h2>
-    
-    <input type="file" id="photo-input" accept="image/*" hidden>
+  <div id="photo-viewer" class="photo-viewer" hidden>
+    <button
+      id="close-viewer"
+      type="button"
+      aria-label="Close photo"
+    >
+      &times;
+    </button>
 
-<button id="upload-btn">
-  Upload Photo 📸
-</button>
-    <div id="gallery"></div>
+    <img id="viewer-image" alt="">
   </div>
 
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script src="script.js"></script>
-
-<div id="photo-viewer" class="photo-viewer">
-
-  <button id="close-viewer">&times;</button>
-
-  <img id="viewer-image">
-
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
