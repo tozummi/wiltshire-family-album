@@ -273,9 +273,17 @@ async function loadGallery() {
     gallery.appendChild(card);
   });
 }
-document.getElementById("close-viewer").onclick = () => {
-  const viewer = document.getElementById("photo-viewer");
+const viewer = document.getElementById("photo-viewer");
 
+function closeViewer() {
   viewer.classList.remove("open");
   viewer.hidden = true;
+}
+
+document.getElementById("close-viewer").onclick = closeViewer;
+
+viewer.onclick = (event) => {
+  if (event.target === viewer) {
+    closeViewer();
+  }
 };
