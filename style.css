@@ -76,3 +76,25 @@ button {
   font-size: 15px;
   flex-shrink: 0;
 }
+#continue-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  font-family: inherit;
+  font-size: 16px;
+  transition: 0.2s ease;
+  background: #ddd;
+  color: #888;
+}
+
+#continue-btn:not(:disabled) {
+  background: #8b6f47;
+  color: white;
+  cursor: pointer;
+}
+
+#continue-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
