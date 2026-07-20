@@ -163,7 +163,7 @@ async function loadGallery() {
 
   const { data, error } = await supabaseClient
     .from("photos")
-    .select("image_url, uploader_name, created_at")
+    .select("image_url, user_name, created_at")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -184,7 +184,7 @@ async function loadGallery() {
 
     card.innerHTML = `
       <img src="${photo.image_url}">
-      <p>Uploaded by ${photo.uploader_name}</p>
+      <p>Uploaded by ${photo.user_name}</p>
     `;
 
     gallery.appendChild(card);
