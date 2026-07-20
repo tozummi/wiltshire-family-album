@@ -175,7 +175,7 @@ async function loadGallery() {
     uploader:family_members (
       name,
       initials,
-      colour,
+      colour
     )
   `)
   .eq("status", "approved")
