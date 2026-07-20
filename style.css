@@ -259,7 +259,7 @@ button {
 
   gap: 10px;
 
-  padding: 90px 22px 24px;
+  padding: 90px 22px 88px;
 
   color: white;
 
@@ -301,7 +301,7 @@ button {
 
 @media (max-width: 600px) {
   #viewer-details {
-    padding: 80px 18px 20px;
+    padding: 80px 18px 82px;
     gap: 8px;
   }
 
@@ -399,4 +399,48 @@ button {
 #save-caption-btn {
   background: #222222;
   color: white;
+}
+
+.reaction-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 3;
+
+  display: flex;
+  gap: 8px;
+
+  padding: 8px;
+
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+
+  transform: translateX(-50%);
+}
+
+.reaction-bar button {
+  width: 42px;
+  height: 42px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+
+  font-size: 24px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.reaction-bar button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.reaction-bar button.selected {
+  background: rgba(255, 255, 255, 0.22);
+  transform: scale(1.12);
 }
