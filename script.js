@@ -67,6 +67,7 @@ async function checkPin() {
 
     document.getElementById("login-box").style.display = "none";
     document.getElementById("name-selection").style.display = "block";
+    loadFamilyMembers();
 
   } else {
 
