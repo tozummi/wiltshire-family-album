@@ -27,6 +27,7 @@ button {
   border: none;
   cursor: pointer;
 }
+
 .pin-wrapper {
   display: flex;
   justify-content: center;
@@ -52,7 +53,7 @@ button {
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .member-button:active {
@@ -76,6 +77,7 @@ button {
   font-size: 15px;
   flex-shrink: 0;
 }
+
 #continue-btn {
   width: 100%;
   margin-top: 20px;
@@ -98,6 +100,7 @@ button {
 #continue-btn:active:not(:disabled) {
   transform: scale(0.98);
 }
+
 #upload-btn {
   margin-top: 20px;
   width: 100%;
@@ -109,30 +112,55 @@ button {
   font-family: inherit;
   font-size: 16px;
 }
+
+/* Google Photos-style masonry gallery */
 #gallery {
   margin-top: 25px;
-  display: grid;
-  gap: 20px;
+  column-count: 2;
+  column-gap: 8px;
+  text-align: left;
 }
 
 .photo-card {
-  background: white;
-  border-radius: 18px;
-  padding: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 8px;
+  padding: 0;
+  background: transparent;
+  border-radius: 12px;
   overflow: hidden;
+  break-inside: avoid;
+  box-shadow: none;
+}
+
+.photo-image-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #eeeae3;
 }
 
 .photo-card img {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: 14px;
+  height: auto;
   display: block;
+  border-radius: 12px;
 }
 
-.photo-card p {
-  margin: 12px 5px 5px;
-  font-size: 14px;
-  color: #555;
+.photo-uploader-badge {
+  z-index: 2;
+}
+
+/* Hide the text beneath each photo for a cleaner collage */
+.photo-card p,
+.photo-card small {
+  display: none;
+}
+
+@media (min-width: 520px) {
+  #gallery {
+    column-count: 3;
+  }
 }
