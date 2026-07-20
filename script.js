@@ -432,6 +432,9 @@ const viewer = document.getElementById("photo-viewer");
 
 function closeViewer() {
   viewer.classList.remove("open");
+  captionEditor.hidden = true;
+editCaptionButton.hidden =
+  currentPhotoUploaderId !== currentUser.id;
   viewer.hidden = true;
 }
 
