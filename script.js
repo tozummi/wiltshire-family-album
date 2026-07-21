@@ -567,7 +567,6 @@ async function loadGallery(
     `;
 
     card.onclick = () => {
-    card.onclick = () => {
   openPhoto(photoIndex);
 
   history.pushState(
@@ -576,7 +575,7 @@ async function loadGallery(
   );
 };
 
-    gallery.appendChild(card);
+gallery.appendChild(card);
   });
 
   if (newPhotoId) {
