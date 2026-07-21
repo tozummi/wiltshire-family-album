@@ -710,30 +710,25 @@ saveCaptionButton.onclick = async () => {
 async function loadCurrentReaction() {
   reactionButtons.forEach(button => {
     button.classList.remove("selected");
+
+    const countElement =
+      button.querySelector(".reaction-count");
+
+    if (countElement) {
+      countElement.textContent = "0";
+    }
   });
 
   currentUserReaction = null;
 
-  if (
-    !currentPhotoId ||
-    !currentUser
-  ) {
+  if (!currentPhotoId || !currentUser) {
     return;
   }
 
-  const { data, error } =
-    await supabaseClient
-      .from("photo_reactions")
-      .select("reaction")
-      .eq(
-        "photo_id",
-        currentPhotoId
-      )
-      .eq(
-        "user_id",
-        currentUser.id
-      )
-      .maybeSingle();
+  const { data, error } = await supabaseClient
+    .from("photo_reactions")
+    .select("user_id, reaction")
+    .eq("photo_id", currentPhotoId);
 
   if (error) {
     console.log(
@@ -742,26 +737,62 @@ async function loadCurrentReaction() {
     );
 
     showToast(
-      "The reaction could not be loaded.",
+      "The reactions could not be loaded.",
       "error"
     );
 
     return;
   }
 
-  if (!data) return;
+  const reactionCounts = {
+    love: 0,
+    funny: 0,
+    beautiful: 0,
+    aww: 0,
+    like: 0
+  };
 
-  currentUserReaction =
-    data.reaction;
+  data.forEach(savedReaction => {
+    if (
+      Object.prototype.hasOwnProperty.call(
+        reactionCounts,
+        savedReaction.reaction
+      )
+    ) {
+      reactionCounts[savedReaction.reaction]++;
+    }
 
-  const selectedButton =
-    document.querySelector(
-      `#reaction-bar button[data-reaction="${currentUserReaction}"]`
-    );
+    if (
+      String(savedReaction.user_id) ===
+      String(currentUser.id)
+    ) {
+      currentUserReaction =
+        savedReaction.reaction;
+    }
+  });
 
-  selectedButton?.classList.add(
-    "selected"
-  );
+  reactionButtons.forEach(button => {
+    const reaction =
+      button.dataset.reaction;
+
+    const countElement =
+      button.querySelector(".reaction-count");
+
+    if (countElement) {
+      const count =
+        reactionCounts[reaction] || 0;
+
+      countElement.textContent =
+        count > 0 ? count : "";
+    }
+
+    if (
+      reaction ===
+      currentUserReaction
+    ) {
+      button.classList.add("selected");
+    }
+  });
 }
 
 
