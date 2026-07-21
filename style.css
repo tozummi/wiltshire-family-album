@@ -29,14 +29,37 @@ cursor: pointer;
 }
 
 .pin-wrapper {
-display: flex;
-justify-content: center;
-gap: 5px;
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.pin-wrapper input {
+  width: 100%;
+  padding: 12px 44px 12px 12px;
+  box-sizing: border-box;
 }
 
 .pin-wrapper button {
-background: transparent;
-padding: 8px;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+
+  transform: translateY(-50%);
+
+  padding: 0;
+  margin: 0;
+
+  background: transparent;
+  border: none;
+
+  font-size: 18px;
+  cursor: pointer;
+}
+
+#login-box > button {
+  margin-top: 16px;
 }
 
 .member-button {
