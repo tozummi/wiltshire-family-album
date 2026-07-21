@@ -408,7 +408,7 @@ button {
   z-index: 3;
 
   display: flex;
-  gap: 8px;
+  gap: 6px;
 
   padding: 8px;
 
@@ -420,20 +420,27 @@ button {
 }
 
 .reaction-bar button {
-  width: 42px;
-  height: 42px;
+  min-width: 48px;
+  height: 52px;
 
-  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 2px;
+  padding: 4px 7px;
 
   border: none;
-  border-radius: 50%;
+  border-radius: 14px;
 
   background: transparent;
-
-  font-size: 24px;
-  line-height: 1;
+  color: white;
 
   cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .reaction-bar button:hover {
@@ -442,8 +449,33 @@ button {
 
 .reaction-bar button.selected {
   background: white;
-  transform: scale(1.15);
+  color: #222222;
+  transform: scale(1.1);
+
   box-shadow:
     0 0 0 3px rgba(255, 255, 255, 0.35),
     0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.reaction-emoji {
+  font-size: 23px;
+  line-height: 1;
+}
+
+.reaction-count {
+  min-height: 13px;
+
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.reaction-count:empty {
+  display: none;
+}
+
+.reaction-bar button:disabled {
+  opacity: 0.65;
+  cursor: default;
 }
