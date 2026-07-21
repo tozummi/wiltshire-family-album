@@ -552,11 +552,19 @@ async function loadCurrentReaction() {
 });
   
   if (error) {
-    console.log("REACTION LOAD ERROR:", error);
-    return;
-  }
+  showToast(
+    `Reaction error: ${error.message}`,
+    "error"
+  );
+  return;
+}
 
-  if (!data) return;
+if (!data) {
+  showToast("No saved reaction found.", "error");
+  return;
+}
+
+showToast(`Saved reaction found: ${data.reaction}`);
 
   currentUserReaction = data.reaction;
 
