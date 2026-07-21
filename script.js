@@ -6,6 +6,8 @@ const supabaseClient = supabase.createClient(
 const CLOUDINARY_CLOUD_NAME = "x58975lj";
 const CLOUDINARY_UPLOAD_PRESET = "family_album_upload";
 
+let galleryPhotos = [];
+let currentPhotoIndex = -1;
 let currentUserReaction = null;
 let currentPhotoId = null;
 let currentPhotoUploaderId = null;
@@ -367,6 +369,77 @@ photoInput.onchange = async event => {
   }
 };
 
+function openPhoto(photoIndex, direction = null) {
+  const photo = galleryPhotos[photoIndex];
+
+  if (!photo) return;
+
+  currentPhotoIndex = photoIndex;
+
+  const uploader = photo.uploader;
+
+  const uploaderName =
+    uploader?.name ||
+    photo.user_name ||
+    "Family member";
+
+  const viewerImage =
+    document.getElementById("viewer-image");
+
+  const viewerUploader =
+    document.getElementById("viewer-uploader");
+
+  const viewerDate =
+    document.getElementById("viewer-date");
+
+  const viewerCaption =
+    document.getElementById("viewer-caption");
+
+  if (direction) {
+    viewerImage.classList.remove(
+      "slide-from-left",
+      "slide-from-right"
+    );
+
+    void viewerImage.offsetWidth;
+
+    viewerImage.classList.add(
+      direction === "next"
+        ? "slide-from-right"
+        : "slide-from-left"
+    );
+  }
+
+  viewerImage.src = photo.image_url;
+
+  viewerCaption.textContent =
+    photo.caption || "";
+
+  currentPhotoId = photo.id;
+  currentPhotoUploaderId = photo.user_id;
+  currentPhotoCaption = photo.caption || "";
+
+  editCaptionButton.hidden =
+    photo.user_id !== currentUser.id;
+
+  editCaptionButton.textContent =
+    currentPhotoCaption
+      ? "Edit caption"
+      : "Add caption";
+
+  viewerUploader.textContent =
+    `📸 ${uploaderName}`;
+
+  viewerDate.textContent =
+    new Date(
+      photo.created_at
+    ).toLocaleDateString("en-GB");
+
+  viewer.hidden = false;
+  viewer.classList.add("open");
+
+  loadCurrentReaction();
+}
 
 async function loadGallery(
   newPhotoId = null
@@ -407,6 +480,8 @@ async function loadGallery(
     return;
   }
 
+  galleryPhotos = data;
+
   gallery.innerHTML = "";
 
   if (data.length === 0) {
@@ -419,7 +494,7 @@ async function loadGallery(
     return;
   }
 
-  data.forEach(photo => {
+  data.forEach((photo, photoIndex) => {
     const uploader = photo.uploader;
 
     const uploaderName =
@@ -492,68 +567,14 @@ async function loadGallery(
     `;
 
     card.onclick = () => {
-      const viewerImage =
-        document.getElementById(
-          "viewer-image"
-        );
+    card.onclick = () => {
+  openPhoto(photoIndex);
 
-      const viewerUploader =
-        document.getElementById(
-          "viewer-uploader"
-        );
-
-      const viewerDate =
-        document.getElementById(
-          "viewer-date"
-        );
-
-      const viewerCaption =
-        document.getElementById(
-          "viewer-caption"
-        );
-
-      viewerImage.src =
-        photo.image_url;
-
-      viewerCaption.textContent =
-        photo.caption || "";
-
-      currentPhotoId =
-        photo.id;
-
-      currentPhotoUploaderId =
-        photo.user_id;
-
-      currentPhotoCaption =
-        photo.caption || "";
-
-      editCaptionButton.hidden =
-        photo.user_id !==
-        currentUser.id;
-
-      editCaptionButton.textContent =
-        currentPhotoCaption
-          ? "Edit caption"
-          : "Add caption";
-
-      viewerUploader.textContent =
-        `📸 ${uploaderName}`;
-
-      viewerDate.textContent =
-        new Date(
-          photo.created_at
-        ).toLocaleDateString("en-GB");
-
-      viewer.hidden = false;
-      viewer.classList.add("open");
-
-      loadCurrentReaction();
-
-      history.pushState(
-        { photoViewer: true },
-        ""
-      );
-    };
+  history.pushState(
+    { photoViewer: true },
+    ""
+  );
+};
 
     gallery.appendChild(card);
   });
@@ -591,6 +612,7 @@ function closeViewer() {
   currentPhotoUploaderId = null;
   currentPhotoCaption = "";
   currentUserReaction = null;
+  currentPhotoIndex = -1;
 
   reactionButtons.forEach(button => {
     button.classList.remove("selected");
@@ -893,4 +915,91 @@ reactionButtons.forEach(button => {
 });
 
 
+let swipeStartX = 0;
+let swipeStartY = 0;
+let swipeEndX = 0;
+let swipeEndY = 0;
+
+viewer.addEventListener(
+  "touchstart",
+  event => {
+    const touch = event.changedTouches[0];
+
+    swipeStartX = touch.screenX;
+    swipeStartY = touch.screenY;
+  },
+  {
+    passive: true
+  }
+);
+
+viewer.addEventListener(
+  "touchend",
+  event => {
+    const touch = event.changedTouches[0];
+
+    swipeEndX = touch.screenX;
+    swipeEndY = touch.screenY;
+
+    handleViewerSwipe();
+  },
+  {
+    passive: true
+  }
+);
+
+function handleViewerSwipe() {
+  const horizontalDistance =
+    swipeEndX - swipeStartX;
+
+  const verticalDistance =
+    swipeEndY - swipeStartY;
+
+  const minimumSwipeDistance = 50;
+
+  if (
+    Math.abs(horizontalDistance) <
+    minimumSwipeDistance
+  ) {
+    return;
+  }
+
+  if (
+    Math.abs(horizontalDistance) <=
+    Math.abs(verticalDistance)
+  ) {
+    return;
+  }
+
+  if (horizontalDistance < 0) {
+    showNextPhoto();
+  } else {
+    showPreviousPhoto();
+  }
+}
+
+function showNextPhoto() {
+  if (
+    currentPhotoIndex >=
+    galleryPhotos.length - 1
+  ) {
+    return;
+  }
+
+  openPhoto(
+    currentPhotoIndex + 1,
+    "next"
+  );
+}
+
+function showPreviousPhoto() {
+  if (currentPhotoIndex <= 0) {
+    return;
+  }
+
+  openPhoto(
+    currentPhotoIndex - 1,
+    "previous"
+  );
+}
 restoreSavedUser();
