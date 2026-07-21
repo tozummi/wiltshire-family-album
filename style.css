@@ -247,6 +247,7 @@ button {
   font-size: 16px;
   opacity: 0.7;
 }
+
 #viewer-details {
   position: absolute;
   left: 0;
@@ -256,12 +257,12 @@ button {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 0.55em;
 
-  gap: 10px;
-
-  padding: 90px 22px 88px;
+  padding: 5em 1.2em 5em;
 
   color: white;
+  font-size: 14px;
 
   background: linear-gradient(
     to bottom,
@@ -272,68 +273,58 @@ button {
   box-sizing: border-box;
 }
 
-#viewer-caption {
-  margin: 0;
+/*
+  Change this one value to resize most of the
+  text and controls inside the photo viewer.
+*/
+@media (min-width: 601px) {
+  #viewer-details {
+    font-size: 15px;
+  }
+}
 
+#viewer-caption {
   max-width: 100%;
+  margin: 0;
 
   color: white;
 
-  font-size: 19px;
+  font-size: 1em;
   font-weight: 400;
-
-  line-height: 1.6;
+  line-height: 1.45;
 
   overflow-wrap: anywhere;
 }
+
 #viewer-uploader {
   display: block;
 
-  font-size: 22px;
+  font-size: 1.1em;
   font-weight: 700;
   line-height: 1.2;
 }
 
 #viewer-date {
-  font-size: 16px;
+  font-size: 0.8em;
   opacity: 0.82;
-}
-
-@media (max-width: 600px) {
-  #viewer-details {
-    padding: 80px 18px 82px;
-    gap: 8px;
-  }
-
-  #viewer-uploader {
-    font-size: 20px;
-  }
-
-  #viewer-caption {
-    font-size: 18px;
-  }
-
-  #viewer-date {
-    font-size: 15px;
-  }
 }
 
 #edit-caption-btn {
   position: absolute;
-  right: 18px;
-  bottom: 22px;
+  right: 1.2em;
+  bottom: 1.5em;
   z-index: 3;
 
-  padding: 9px 14px;
+  padding: 0.6em 0.9em;
 
   border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 10px;
+  border-radius: 0.65em;
 
   background: rgba(0, 0, 0, 0.45);
   color: white;
 
-  font: inherit;
-  font-size: 15px;
+  font-family: inherit;
+  font-size: 0.85em;
   font-weight: 600;
 
   cursor: pointer;
@@ -341,15 +332,14 @@ button {
 
 #caption-editor {
   position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: 18px;
+  left: 1.2em;
+  right: 1.2em;
+  bottom: 1.2em;
   z-index: 4;
 
-  padding: 14px;
+  padding: 1em;
 
-  border-radius: 14px;
-
+  border-radius: 1em;
   background: white;
 
   box-sizing: border-box;
@@ -357,15 +347,15 @@ button {
 
 #caption-input {
   width: 100%;
-  min-height: 90px;
+  min-height: 6em;
 
-  padding: 11px;
+  padding: 0.75em;
 
   border: 1px solid #cccccc;
-  border-radius: 10px;
+  border-radius: 0.7em;
 
-  font: inherit;
-  font-size: 16px;
+  font-family: inherit;
+  font-size: 0.95em;
   line-height: 1.4;
 
   resize: vertical;
@@ -375,18 +365,19 @@ button {
 .caption-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 0.7em;
 
-  margin-top: 10px;
+  margin-top: 0.7em;
 }
 
 .caption-actions button {
-  padding: 9px 15px;
+  padding: 0.6em 1em;
 
   border: none;
-  border-radius: 9px;
+  border-radius: 0.65em;
 
-  font: inherit;
+  font-family: inherit;
+  font-size: 0.85em;
   font-weight: 600;
 
   cursor: pointer;
@@ -404,15 +395,15 @@ button {
 .reaction-bar {
   position: absolute;
   left: 50%;
-  bottom: 22px;
+  bottom: 1.5em;
   z-index: 3;
 
   display: flex;
-  gap: 6px;
+  gap: 0.3em;
 
-  padding: 8px;
+  padding: 0.5em;
 
-  border-radius: 18px;
+  border-radius: 1.2em;
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(8px);
 
@@ -420,24 +411,27 @@ button {
 }
 
 .reaction-bar button {
-  min-width: 48px;
-  height: 52px;
+  min-width: 2.9em;
+  height: 3.2em;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  gap: 2px;
-  padding: 4px 7px;
+  gap: 0.15em;
+  padding: 0.25em 0.4em;
 
   border: none;
-  border-radius: 14px;
+  border-radius: 0.85em;
 
   background: transparent;
   color: white;
 
+  font-size: inherit;
+
   cursor: pointer;
+
   transition:
     background 0.2s ease,
     transform 0.2s ease;
@@ -450,7 +444,7 @@ button {
 .reaction-bar button.selected {
   background: white;
   color: #222222;
-  transform: scale(1.1);
+  transform: scale(1.08);
 
   box-shadow:
     0 0 0 3px rgba(255, 255, 255, 0.35),
@@ -458,15 +452,15 @@ button {
 }
 
 .reaction-emoji {
-  font-size: 23px;
+  font-size: 1.35em;
   line-height: 1;
 }
 
 .reaction-count {
-  min-height: 13px;
+  min-height: 1em;
 
   font-family: Arial, sans-serif;
-  font-size: 11px;
+  font-size: 0.65em;
   font-weight: 700;
   line-height: 1;
 }
