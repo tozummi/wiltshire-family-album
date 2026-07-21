@@ -1,7 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
   <title>Wiltshire Family Album</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -15,29 +23,50 @@
       <p>Enter family code</p>
 
       <div class="pin-wrapper">
-        <input id="pin" type="password" placeholder="PIN">
+        <input
+          id="pin"
+          type="password"
+          placeholder="PIN"
+        >
 
-        <button type="button" onclick="togglePin()">
+        <button
+          type="button"
+          onclick="togglePin()"
+          aria-label="Show or hide PIN"
+        >
           👁️
         </button>
       </div>
 
-      <button onclick="checkPin()">
+      <button
+        type="button"
+        onclick="checkPin()"
+      >
         Enter
       </button>
     </div>
 
-    <div id="name-selection" style="display: none;">
+    <div
+      id="name-selection"
+      style="display: none;"
+    >
       <h2>Who's using the album?</h2>
 
       <div id="family-list"></div>
 
-      <button id="continue-btn" disabled>
+      <button
+        id="continue-btn"
+        type="button"
+        disabled
+      >
         Continue
       </button>
     </div>
 
-    <div id="album" style="display: none;">
+    <div
+      id="album"
+      style="display: none;"
+    >
       <h2 id="welcome-message"></h2>
 
       <input
@@ -48,7 +77,10 @@
         hidden
       >
 
-      <button id="upload-btn">
+      <button
+        id="upload-btn"
+        type="button"
+      >
         Upload Photo 📸
       </button>
 
@@ -58,8 +90,12 @@
   </div>
 
   <div id="toast"></div>
-  
-  <div id="photo-viewer" class="photo-viewer" hidden>
+
+  <div
+    id="photo-viewer"
+    class="photo-viewer"
+    hidden
+  >
     <button
       id="close-viewer"
       type="button"
@@ -68,61 +104,109 @@
       &times;
     </button>
 
-    <img id="viewer-image" alt="">
+    <img
+      id="viewer-image"
+      alt=""
+    >
+
     <div id="viewer-details">
-  <div>
-    <div id="reaction-bar" class="reaction-bar">
-  <button type="button" data-reaction="love">
-    <span class="reaction-emoji">❤️</span>
-    <span class="reaction-count">0</span>
-  </button>
 
-  <button type="button" data-reaction="funny">
-    <span class="reaction-emoji">😂</span>
-    <span class="reaction-count">0</span>
-  </button>
+      <div>
 
-  <button type="button" data-reaction="beautiful">
-    <span class="reaction-emoji">😍</span>
-    <span class="reaction-count">0</span>
-  </button>
+        <div
+          id="reaction-bar"
+          class="reaction-bar"
+        >
+          <button
+            type="button"
+            data-reaction="love"
+            aria-label="Love"
+          >
+            <span class="reaction-emoji">❤️</span>
+            <span class="reaction-count">0</span>
+          </button>
 
-  <button type="button" data-reaction="aww">
-    <span class="reaction-emoji">🥹</span>
-    <span class="reaction-count">0</span>
-  </button>
+          <button
+            type="button"
+            data-reaction="funny"
+            aria-label="Funny"
+          >
+            <span class="reaction-emoji">😂</span>
+            <span class="reaction-count">0</span>
+          </button>
 
-  <button type="button" data-reaction="like">
-    <span class="reaction-emoji">👍</span>
-    <span class="reaction-count">0</span>
-  </button>
-</div>
-    <button id="edit-caption-btn" type="button" hidden>
-  Add caption
-    </button>
-    <div id="caption-editor" hidden>
-  <textarea
-    id="caption-input"
-    maxlength="200"
-    placeholder="Write a caption..."
-  ></textarea>
+          <button
+            type="button"
+            data-reaction="beautiful"
+            aria-label="Beautiful"
+          >
+            <span class="reaction-emoji">😍</span>
+            <span class="reaction-count">0</span>
+          </button>
 
-  <div class="caption-actions">
-    <button id="cancel-caption-btn" type="button">
-      Cancel
-    </button>
+          <button
+            type="button"
+            data-reaction="aww"
+            aria-label="Aww"
+          >
+            <span class="reaction-emoji">🥹</span>
+            <span class="reaction-count">0</span>
+          </button>
 
-    <button id="save-caption-btn" type="button">
-      Save
-    </button>
-  </div>
+          <button
+            type="button"
+            data-reaction="like"
+            aria-label="Like"
+          >
+            <span class="reaction-emoji">👍</span>
+            <span class="reaction-count">0</span>
+          </button>
+        </div>
+
+        <button
+          id="edit-caption-btn"
+          type="button"
+          hidden
+        >
+          Add caption
+        </button>
+
+        <div
+          id="caption-editor"
+          hidden
+        >
+          <textarea
+            id="caption-input"
+            maxlength="200"
+            placeholder="Write a caption..."
+          ></textarea>
+
+          <div class="caption-actions">
+            <button
+              id="cancel-caption-btn"
+              type="button"
+            >
+              Cancel
+            </button>
+
+            <button
+              id="save-caption-btn"
+              type="button"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+
+        <span id="viewer-uploader"></span>
+
+        <p id="viewer-caption"></p>
+
+      </div>
+
+      <span id="viewer-date"></span>
+
     </div>
-    <span id="viewer-uploader"></span>
-    <p id="viewer-caption"></p>
-  </div>
-
-  <span id="viewer-date"></span>
-</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
