@@ -590,11 +590,7 @@ function closeViewer() {
   currentPhotoId = null;
   currentPhotoUploaderId = null;
   currentPhotoCaption = "";
-  currentUserReaction = null;
-
-  reactionButtons.forEach(button => {
-    button.classList.remove("selected");
-  });
+  await loadCurrentReaction();
 }
 
 
@@ -904,20 +900,7 @@ reactionButtons.forEach(button => {
       return;
     }
 
-    currentUserReaction =
-      chosenReaction;
-
-    reactionButtons.forEach(
-      reactionButton => {
-        reactionButton.classList.remove(
-          "selected"
-        );
-      }
-    );
-
-    button.classList.add(
-      "selected"
-    );
+    await loadCurrentReaction();
   };
 });
 
