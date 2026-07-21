@@ -543,7 +543,6 @@ async function loadCurrentReaction() {
     .from("photo_reactions")
     .select("reaction")
     .eq("photo_id", currentPhotoId)
-    .eq("user_id", currentUser.id)
     .maybeSingle();
 
   console.log("Checking reaction for:", {
