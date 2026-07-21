@@ -12,7 +12,33 @@ let currentPhotoUploaderId = null;
 let currentPhotoCaption = "";
 let selectedMember = null;
 let currentUser = null;
+
 const savedUser = localStorage.getItem("familyAlbumUser");
+
+const gallery = document.getElementById("gallery");
+const viewer = document.getElementById("photo-viewer");
+
+const uploadButton = document.getElementById("upload-btn");
+const photoInput = document.getElementById("photo-input");
+
+const editCaptionButton =
+  document.getElementById("edit-caption-btn");
+
+const captionEditor =
+  document.getElementById("caption-editor");
+
+const captionInput =
+  document.getElementById("caption-input");
+
+const cancelCaptionButton =
+  document.getElementById("cancel-caption-btn");
+
+const saveCaptionButton =
+  document.getElementById("save-caption-btn");
+
+const reactionButtons =
+  document.querySelectorAll("#reaction-bar button");
+
 
 function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
@@ -28,15 +54,20 @@ function showToast(message, type = "success") {
   }, 3000);
 }
 
+
 function getTextColour(hex) {
   const r = parseInt(hex.substring(1, 3), 16);
   const g = parseInt(hex.substring(3, 5), 16);
   const b = parseInt(hex.substring(5, 7), 16);
 
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  const brightness =
+    (r * 299 + g * 587 + b * 114) / 1000;
 
-  return brightness > 150 ? "#000000" : "#ffffff";
+  return brightness > 150
+    ? "#000000"
+    : "#ffffff";
 }
+
 
 async function loadFamilyMembers() {
   const { data, error } = await supabaseClient
@@ -50,12 +81,14 @@ async function loadFamilyMembers() {
     return;
   }
 
-  const list = document.getElementById("family-list");
+  const list =
+    document.getElementById("family-list");
 
   list.innerHTML = "";
 
   data.forEach(member => {
-    const button = document.createElement("button");
+    const button =
+      document.createElement("button");
 
     button.className = "member-button";
 
@@ -78,36 +111,49 @@ async function loadFamilyMembers() {
 
       document
         .querySelectorAll(".member-button")
-        .forEach(btn => btn.classList.remove("selected"));
+        .forEach(memberButton => {
+          memberButton.classList.remove("selected");
+        });
 
       button.classList.add("selected");
 
-      document.getElementById("continue-btn").disabled = false;
+      document.getElementById(
+        "continue-btn"
+      ).disabled = false;
     };
 
     list.appendChild(button);
   });
 }
 
+
 function continueToAlbum() {
   if (!selectedMember) return;
 
   currentUser = selectedMember;
+
   localStorage.setItem(
-  "familyAlbumUser",
-  JSON.stringify(currentUser)
-);
+    "familyAlbumUser",
+    JSON.stringify(currentUser)
+  );
 
-  document.getElementById("name-selection").style.display = "none";
-  document.getElementById("album").style.display = "block";
+  document.getElementById(
+    "name-selection"
+  ).style.display = "none";
 
-  document.getElementById("welcome-message").textContent =
+  document.getElementById(
+    "album"
+  ).style.display = "block";
+
+  document.getElementById(
+    "welcome-message"
+  ).textContent =
     `Welcome, ${currentUser.name} 📸`;
-
-  console.log("Current user:", currentUser);
 
   loadGallery();
 }
+
+
 function restoreSavedUser() {
   if (!savedUser) return;
 
@@ -115,31 +161,50 @@ function restoreSavedUser() {
     currentUser = JSON.parse(savedUser);
     selectedMember = currentUser;
 
-    document.getElementById("login-box").style.display = "none";
-    document.getElementById("name-selection").style.display = "none";
-    document.getElementById("album").style.display = "block";
+    document.getElementById(
+      "login-box"
+    ).style.display = "none";
 
-    document.getElementById("welcome-message").textContent =
+    document.getElementById(
+      "name-selection"
+    ).style.display = "none";
+
+    document.getElementById(
+      "album"
+    ).style.display = "block";
+
+    document.getElementById(
+      "welcome-message"
+    ).textContent =
       `Welcome, ${currentUser.name} 📸`;
 
     loadGallery();
   } catch (error) {
     localStorage.removeItem("familyAlbumUser");
-    console.log("Could not restore saved user:", error);
+
+    console.log(
+      "Could not restore saved user:",
+      error
+    );
   }
 }
-document.getElementById("continue-btn").onclick = continueToAlbum;
+
+
+document.getElementById(
+  "continue-btn"
+).onclick = continueToAlbum;
+
 
 async function checkPin() {
-  const enteredPin = document.getElementById("pin").value;
+  const enteredPin =
+    document.getElementById("pin").value;
 
-  const gallery = document.getElementById("gallery");
+  gallery.innerHTML = `
+    <p class="gallery-message">
+      Loading memories... 📸
+    </p>
+  `;
 
-gallery.innerHTML = `
-  <p class="gallery-message">
-    Loading memories... 📸
-  </p>
-`;
   const { data, error } = await supabaseClient
     .from("settings")
     .select("value")
@@ -153,8 +218,13 @@ gallery.innerHTML = `
   }
 
   if (enteredPin === data.value) {
-    document.getElementById("login-box").style.display = "none";
-    document.getElementById("name-selection").style.display = "block";
+    document.getElementById(
+      "login-box"
+    ).style.display = "none";
+
+    document.getElementById(
+      "name-selection"
+    ).style.display = "block";
 
     loadFamilyMembers();
   } else {
@@ -162,18 +232,17 @@ gallery.innerHTML = `
   }
 }
 
-function togglePin() {
-  const pinInput = document.getElementById("pin");
 
-  if (pinInput.type === "password") {
-    pinInput.type = "text";
-  } else {
-    pinInput.type = "password";
-  }
+function togglePin() {
+  const pinInput =
+    document.getElementById("pin");
+
+  pinInput.type =
+    pinInput.type === "password"
+      ? "text"
+      : "password";
 }
 
-const uploadButton = document.getElementById("upload-btn");
-const photoInput = document.getElementById("photo-input");
 
 uploadButton.onclick = () => {
   if (!uploadButton.disabled) {
@@ -181,8 +250,10 @@ uploadButton.onclick = () => {
   }
 };
 
+
 photoInput.onchange = async event => {
-  const files = Array.from(event.target.files);
+  const files =
+    Array.from(event.target.files);
 
   if (files.length === 0) return;
 
@@ -193,7 +264,11 @@ photoInput.onchange = async event => {
   let newestPhotoId = null;
 
   try {
-    for (let index = 0; index < files.length; index++) {
+    for (
+      let index = 0;
+      index < files.length;
+      index++
+    ) {
       const file = files[index];
 
       uploadButton.textContent =
@@ -203,6 +278,7 @@ photoInput.onchange = async event => {
         const formData = new FormData();
 
         formData.append("file", file);
+
         formData.append(
           "upload_preset",
           CLOUDINARY_UPLOAD_PRESET
@@ -216,7 +292,8 @@ photoInput.onchange = async event => {
           }
         );
 
-        const cloudinaryData = await response.json();
+        const cloudinaryData =
+          await response.json();
 
         if (!cloudinaryData.secure_url) {
           throw new Error(
@@ -225,18 +302,29 @@ photoInput.onchange = async event => {
           );
         }
 
-        const { data: newPhoto, error } =
-          await supabaseClient
-            .from("photos")
-            .insert({
-              image_url: cloudinaryData.secure_url,
-              cloudinary_id: cloudinaryData.public_id,
-              user_id: currentUser.id,
-              user_name: currentUser.name,
-              status: "approved"
-            })
-            .select("id")
-            .single();
+        const {
+          data: newPhoto,
+          error
+        } = await supabaseClient
+          .from("photos")
+          .insert({
+            image_url:
+              cloudinaryData.secure_url,
+
+            cloudinary_id:
+              cloudinaryData.public_id,
+
+            user_id:
+              currentUser.id,
+
+            user_name:
+              currentUser.name,
+
+            status:
+              "approved"
+          })
+          .select("id")
+          .single();
 
         if (error) {
           throw error;
@@ -246,6 +334,7 @@ photoInput.onchange = async event => {
         newestPhotoId = newPhoto.id;
       } catch (error) {
         failedCount++;
+
         console.log(
           `UPLOAD ERROR FOR ${file.name}:`,
           error
@@ -257,9 +346,14 @@ photoInput.onchange = async event => {
 
     await loadGallery(newestPhotoId);
 
-    if (uploadedCount > 0 && failedCount === 0) {
+    if (
+      uploadedCount > 0 &&
+      failedCount === 0
+    ) {
       showToast(
-        `${uploadedCount} photo${uploadedCount === 1 ? "" : "s"} uploaded successfully! 📸`
+        `${uploadedCount} photo${
+          uploadedCount === 1 ? "" : "s"
+        } uploaded successfully! 📸`
       );
     } else if (uploadedCount > 0) {
       showToast(
@@ -274,30 +368,38 @@ photoInput.onchange = async event => {
     }
   } finally {
     uploadButton.disabled = false;
-    uploadButton.textContent = "Upload Photos 📸";
+    uploadButton.textContent =
+      "Upload Photos 📸";
   }
 };
 
-async function loadGallery(newPhotoId = null) {
-  const { data, error } = await supabaseClient
-    .from("photos")
-    .select(`
-      id,
-      image_url,
-      user_id,
-      user_name,
-      status,
-      created_at,
-      caption,
-      cloudinary_id,
-      uploader:family_members (
-        name,
-        initials,
-        colour
-      )
-    `)
-    .eq("status", "approved")
-    .order("created_at", { ascending: false });
+
+async function loadGallery(
+  newPhotoId = null
+) {
+  const { data, error } =
+    await supabaseClient
+      .from("photos")
+      .select(`
+        id,
+        image_url,
+        user_id,
+        user_name,
+        status,
+        created_at,
+        caption,
+        cloudinary_id,
+        uploader:family_members (
+          name,
+          initials,
+          colour
+        )
+      `)
+      .eq("status", "approved")
+      .order(
+        "created_at",
+        { ascending: false }
+      );
 
   if (error) {
     console.log(error);
@@ -307,23 +409,33 @@ async function loadGallery(newPhotoId = null) {
 
   gallery.innerHTML = "";
 
-if (data.length === 0) {
-  gallery.innerHTML = `
-    <p class="gallery-message">
-      No memories have been added yet 📸
-    </p>
-  `;
+  if (data.length === 0) {
+    gallery.innerHTML = `
+      <p class="gallery-message">
+        No memories have been added yet 📸
+      </p>
+    `;
 
-  return;
-}
+    return;
+  }
+
   data.forEach(photo => {
     const uploader = photo.uploader;
 
-    const uploaderName = uploader?.name || photo.user_name;
-    const uploaderInitials = uploader?.initials || "?";
-    const uploaderColour = uploader?.colour || "#777777";
+    const uploaderName =
+      uploader?.name ||
+      photo.user_name;
 
-    const card = document.createElement("div");
+    const uploaderInitials =
+      uploader?.initials ||
+      "?";
+
+    const uploaderColour =
+      uploader?.colour ||
+      "#777777";
+
+    const card =
+      document.createElement("div");
 
     card.className = "photo-card";
     card.dataset.photoId = photo.id;
@@ -356,10 +468,14 @@ if (data.length === 0) {
             border: 2px solid white;
             border-radius: 50%;
             background: ${uploaderColour};
-            color: ${getTextColour(uploaderColour)};
+            color: ${getTextColour(
+              uploaderColour
+            )};
             font-size: 13px;
             font-weight: bold;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            box-shadow:
+              0 2px 8px
+              rgba(0, 0, 0, 0.25);
           "
         >
           ${uploaderInitials}
@@ -369,47 +485,74 @@ if (data.length === 0) {
       <p>📸 ${uploaderName}</p>
 
       <small>
-        ${new Date(photo.created_at).toLocaleDateString("en-GB")}
+        ${new Date(
+          photo.created_at
+        ).toLocaleDateString("en-GB")}
       </small>
     `;
 
     card.onclick = () => {
-  const viewerImage =
-    document.getElementById("viewer-image");
+      const viewerImage =
+        document.getElementById(
+          "viewer-image"
+        );
 
-  const viewerUploader =
-    document.getElementById("viewer-uploader");
+      const viewerUploader =
+        document.getElementById(
+          "viewer-uploader"
+        );
 
-  const viewerDate =
-    document.getElementById("viewer-date");
+      const viewerDate =
+        document.getElementById(
+          "viewer-date"
+        );
 
-  viewerImage.src = photo.image_url;
-  const viewerCaption =
-  document.getElementById("viewer-caption");
+      const viewerCaption =
+        document.getElementById(
+          "viewer-caption"
+        );
 
-viewerCaption.textContent = photo.caption || "";
-      const editCaptionButton =
-  document.getElementById("edit-caption-btn");
+      viewerImage.src =
+        photo.image_url;
 
-currentPhotoId = photo.id;
-currentPhotoUploaderId = photo.user_id;
-currentPhotoCaption = photo.caption || "";
+      viewerCaption.textContent =
+        photo.caption || "";
 
-loadCurrentReaction();
+      currentPhotoId =
+        photo.id;
 
-editCaptionButton.hidden =
-  photo.user_id !== currentUser.id;
+      currentPhotoUploaderId =
+        photo.user_id;
 
-editCaptionButton.textContent =
-  currentPhotoCaption ? "Edit caption" : "Add caption";
-  viewerUploader.textContent = `📸 ${uploaderName}`;
+      currentPhotoCaption =
+        photo.caption || "";
 
-  viewerDate.textContent =
-    new Date(photo.created_at).toLocaleDateString("en-GB");
+      editCaptionButton.hidden =
+        photo.user_id !==
+        currentUser.id;
+
+      editCaptionButton.textContent =
+        currentPhotoCaption
+          ? "Edit caption"
+          : "Add caption";
+
+      viewerUploader.textContent =
+        `📸 ${uploaderName}`;
+
+      viewerDate.textContent =
+        new Date(
+          photo.created_at
+        ).toLocaleDateString("en-GB");
+
       viewer.hidden = false;
       viewer.classList.add("open");
 
-      history.pushState({ photoViewer: true }, "");
+      loadCurrentReaction();
+
+      history.pushState(
+        { photoViewer: true },
+        ""
+      );
     };
 
     gallery.appendChild(card);
@@ -417,9 +560,10 @@ editCaptionButton.textContent =
 
   if (newPhotoId) {
     requestAnimationFrame(() => {
-      const newPhotoCard = gallery.querySelector(
-        `[data-photo-id="${newPhotoId}"]`
-      );
+      const newPhotoCard =
+        gallery.querySelector(
+          `[data-photo-id="${newPhotoId}"]`
+        );
 
       if (newPhotoCard) {
         newPhotoCard.scrollIntoView({
@@ -431,17 +575,33 @@ editCaptionButton.textContent =
   }
 }
 
-const viewer = document.getElementById("photo-viewer");
 
 function closeViewer() {
   viewer.classList.remove("open");
+
   captionEditor.hidden = true;
-editCaptionButton.hidden =
-  currentPhotoUploaderId !== currentUser.id;
+
+  editCaptionButton.hidden =
+    currentPhotoUploaderId !==
+    currentUser.id;
+
   viewer.hidden = true;
+
+  currentPhotoId = null;
+  currentPhotoUploaderId = null;
+  currentPhotoCaption = "";
+  currentUserReaction = null;
+
+  reactionButtons.forEach(button => {
+    button.classList.remove("selected");
+  });
 }
 
-document.getElementById("close-viewer").onclick = closeViewer;
+
+document.getElementById(
+  "close-viewer"
+).onclick = closeViewer;
+
 
 viewer.onclick = event => {
   if (event.target === viewer) {
@@ -449,28 +609,20 @@ viewer.onclick = event => {
   }
 };
 
-window.addEventListener("popstate", () => {
-  if (!viewer.hidden) {
-    closeViewer();
+
+window.addEventListener(
+  "popstate",
+  () => {
+    if (!viewer.hidden) {
+      closeViewer();
+    }
   }
-});
-const editCaptionButton =
-  document.getElementById("edit-caption-btn");
+);
 
-const captionEditor =
-  document.getElementById("caption-editor");
-
-const captionInput =
-  document.getElementById("caption-input");
-
-const cancelCaptionButton =
-  document.getElementById("cancel-caption-btn");
-
-const saveCaptionButton =
-  document.getElementById("save-caption-btn");
 
 editCaptionButton.onclick = () => {
-  captionInput.value = currentPhotoCaption;
+  captionInput.value =
+    currentPhotoCaption;
 
   captionEditor.hidden = false;
   editCaptionButton.hidden = true;
@@ -478,44 +630,73 @@ editCaptionButton.onclick = () => {
   captionInput.focus();
 };
 
+
 cancelCaptionButton.onclick = () => {
   captionEditor.hidden = true;
+
   editCaptionButton.hidden =
-    currentPhotoUploaderId !== currentUser.id;
+    currentPhotoUploaderId !==
+    currentUser.id;
 };
 
+
 saveCaptionButton.onclick = async () => {
-  const newCaption = captionInput.value.trim();
+  const newCaption =
+    captionInput.value.trim();
 
   saveCaptionButton.disabled = true;
-  saveCaptionButton.textContent = "Saving...";
+  saveCaptionButton.textContent =
+    "Saving...";
 
-  const { data: updatedPhoto, error } = await supabaseClient
-  .from("photos")
-  .update({
-    caption: newCaption || null
-  })
-  .eq("id", currentPhotoId)
-  .eq("user_id", currentUser.id)
-  .select("caption")
-  .single();
+  const {
+    data: updatedPhoto,
+    error
+  } = await supabaseClient
+    .from("photos")
+    .update({
+      caption: newCaption || null
+    })
+    .eq(
+      "id",
+      currentPhotoId
+    )
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+    .select("caption")
+    .single();
 
   saveCaptionButton.disabled = false;
-  saveCaptionButton.textContent = "Save";
+  saveCaptionButton.textContent =
+    "Save";
 
   if (error || !updatedPhoto) {
-    console.log("CAPTION ERROR:", error);
-    showToast("The caption could not be saved.", "error");
+    console.log(
+      "CAPTION ERROR:",
+      error
+    );
+
+    showToast(
+      "The caption could not be saved.",
+      "error"
+    );
+
     return;
   }
 
-  currentPhotoCaption = newCaption;
+  currentPhotoCaption =
+    newCaption;
 
-  document.getElementById("viewer-caption").textContent =
+  document.getElementById(
+    "viewer-caption"
+  ).textContent =
     currentPhotoCaption;
 
   editCaptionButton.textContent =
-    currentPhotoCaption ? "Edit caption" : "Add caption";
+    currentPhotoCaption
+      ? "Edit caption"
+      : "Add caption";
 
   captionEditor.hidden = true;
   editCaptionButton.hidden = false;
@@ -525,8 +706,6 @@ saveCaptionButton.onclick = async () => {
   await loadGallery();
 };
 
-const reactionButtons =
-  document.querySelectorAll("#reaction-bar button");
 
 async function loadCurrentReaction() {
   reactionButtons.forEach(button => {
@@ -534,45 +713,182 @@ async function loadCurrentReaction() {
   });
 
   currentUserReaction = null;
-  console.log("Checking reaction for:", {
-  photoId: currentPhotoId,
-  userId: currentUser.id
-});
 
-  const { data, error } = await supabaseClient
-    .from("photo_reactions")
-    .select("reaction")
-    .eq("photo_id", currentPhotoId)
-    .eq("user_id", currentUser.id)
-    .maybeSingle();
+  if (
+    !currentPhotoId ||
+    !currentUser
+  ) {
+    return;
+  }
 
-  console.log("Checking reaction for:", {
-  photoId: currentPhotoId,
-  userId: currentUser.id
-});
-  
+  const { data, error } =
+    await supabaseClient
+      .from("photo_reactions")
+      .select("reaction")
+      .eq(
+        "photo_id",
+        currentPhotoId
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .maybeSingle();
+
   if (error) {
-  showToast(
-    `Reaction error: ${error.message}`,
-    "error"
+    console.log(
+      "REACTION LOAD ERROR:",
+      error
+    );
+
+    showToast(
+      "The reaction could not be loaded.",
+      "error"
+    );
+
+    return;
+  }
+
+  if (!data) return;
+
+  currentUserReaction =
+    data.reaction;
+
+  const selectedButton =
+    document.querySelector(
+      `#reaction-bar button[data-reaction="${currentUserReaction}"]`
+    );
+
+  selectedButton?.classList.add(
+    "selected"
   );
-  return;
 }
 
-if (!data) {
-  showToast("No saved reaction found.", "error");
-  return;
-}
 
-showToast(`Saved reaction found: ${data.reaction}`);
+reactionButtons.forEach(button => {
+  button.onclick = async () => {
+    if (
+      !currentPhotoId ||
+      !currentUser
+    ) {
+      return;
+    }
 
-  currentUserReaction = data.reaction;
+    const chosenReaction =
+      button.dataset.reaction;
 
-  const selectedButton = document.querySelector(
-    `#reaction-bar button[data-reaction="${currentUserReaction}"]`
-  );
+    reactionButtons.forEach(
+      reactionButton => {
+        reactionButton.disabled = true;
+      }
+    );
 
-  selectedButton?.classList.add("selected");
-}
+    if (
+      currentUserReaction ===
+      chosenReaction
+    ) {
+      const { error } =
+        await supabaseClient
+          .from("photo_reactions")
+          .delete()
+          .eq(
+            "photo_id",
+            currentPhotoId
+          )
+          .eq(
+            "user_id",
+            currentUser.id
+          );
+
+      reactionButtons.forEach(
+        reactionButton => {
+          reactionButton.disabled = false;
+        }
+      );
+
+      if (error) {
+        console.log(
+          "REACTION DELETE ERROR:",
+          error
+        );
+
+        showToast(
+          "The reaction could not be removed.",
+          "error"
+        );
+
+        return;
+      }
+
+      currentUserReaction = null;
+
+      reactionButtons.forEach(
+        reactionButton => {
+          reactionButton.classList.remove(
+            "selected"
+          );
+        }
+      );
+
+      return;
+    }
+
+    const { error } =
+      await supabaseClient
+        .from("photo_reactions")
+        .upsert(
+          {
+            photo_id:
+              currentPhotoId,
+
+            user_id:
+              currentUser.id,
+
+            reaction:
+              chosenReaction
+          },
+          {
+            onConflict:
+              "photo_id,user_id"
+          }
+        );
+
+    reactionButtons.forEach(
+      reactionButton => {
+        reactionButton.disabled = false;
+      }
+    );
+
+    if (error) {
+      console.log(
+        "REACTION SAVE ERROR:",
+        error
+      );
+
+      showToast(
+        "The reaction could not be saved.",
+        "error"
+      );
+
+      return;
+    }
+
+    currentUserReaction =
+      chosenReaction;
+
+    reactionButtons.forEach(
+      reactionButton => {
+        reactionButton.classList.remove(
+          "selected"
+        );
+      }
+    );
+
+    button.classList.add(
+      "selected"
+    );
+  };
+});
+
 
 restoreSavedUser();
