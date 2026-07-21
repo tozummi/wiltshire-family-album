@@ -516,3 +516,38 @@ font-size: 16px;
 right: 14px;
 }
 }
+#viewer-image {
+  will-change: transform, opacity;
+}
+
+#viewer-image.slide-from-right {
+  animation: slideFromRight 0.22s ease;
+}
+
+#viewer-image.slide-from-left {
+  animation: slideFromLeft 0.22s ease;
+}
+
+@keyframes slideFromRight {
+  from {
+    transform: translateX(45px);
+    opacity: 0.55;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFromLeft {
+  from {
+    transform: translateX(-45px);
+    opacity: 0.55;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
