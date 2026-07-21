@@ -534,6 +534,10 @@ async function loadCurrentReaction() {
   });
 
   currentUserReaction = null;
+  console.log("Checking reaction for:", {
+  photoId: currentPhotoId,
+  userId: currentUser.id
+});
 
   const { data, error } = await supabaseClient
     .from("photo_reactions")
@@ -542,6 +546,11 @@ async function loadCurrentReaction() {
     .eq("user_id", currentUser.id)
     .maybeSingle();
 
+  console.log("Checking reaction for:", {
+  photoId: currentPhotoId,
+  userId: currentUser.id
+});
+  
   if (error) {
     console.log("REACTION LOAD ERROR:", error);
     return;
