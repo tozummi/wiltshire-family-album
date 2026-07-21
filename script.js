@@ -199,12 +199,6 @@ async function checkPin() {
   const enteredPin =
     document.getElementById("pin").value;
 
-  gallery.innerHTML = `
-    <p class="gallery-message">
-      Loading memories... 📸
-    </p>
-  `;
-
   const { data, error } = await supabaseClient
     .from("settings")
     .select("value")
@@ -212,7 +206,7 @@ async function checkPin() {
     .single();
 
   if (error) {
-    console.log(error);
+    console.log("PIN ERROR:", error);
     alert(error.message);
     return;
   }
@@ -377,6 +371,12 @@ photoInput.onchange = async event => {
 async function loadGallery(
   newPhotoId = null
 ) {
+  gallery.innerHTML = `
+    <p class="gallery-message">
+      Loading memories... 📸
+    </p>
+  `;
+
   const { data, error } =
     await supabaseClient
       .from("photos")
@@ -402,7 +402,7 @@ async function loadGallery(
       );
 
   if (error) {
-    console.log(error);
+    console.log("GALLERY ERROR:", error);
     alert(error.message);
     return;
   }
@@ -583,14 +583,25 @@ function closeViewer() {
 
   editCaptionButton.hidden =
     currentPhotoUploaderId !==
-    currentUser.id;
+    currentUser?.id;
 
   viewer.hidden = true;
 
   currentPhotoId = null;
   currentPhotoUploaderId = null;
   currentPhotoCaption = "";
-  await loadCurrentReaction();
+  currentUserReaction = null;
+
+  reactionButtons.forEach(button => {
+    button.classList.remove("selected");
+
+    const countElement =
+      button.querySelector(".reaction-count");
+
+    if (countElement) {
+      countElement.textContent = "";
+    }
+  });
 }
 
 
@@ -711,7 +722,7 @@ async function loadCurrentReaction() {
       button.querySelector(".reaction-count");
 
     if (countElement) {
-      countElement.textContent = "0";
+      countElement.textContent = "";
     }
   });
 
@@ -810,83 +821,58 @@ reactionButtons.forEach(button => {
       }
     );
 
-    if (
-      currentUserReaction ===
-      chosenReaction
-    ) {
-      const { error } =
-        await supabaseClient
-          .from("photo_reactions")
-          .delete()
-          .eq(
-            "photo_id",
-            currentPhotoId
-          )
-          .eq(
-            "user_id",
-            currentUser.id
-          );
+    try {
+      if (
+        currentUserReaction ===
+        chosenReaction
+      ) {
+        const { error } =
+          await supabaseClient
+            .from("photo_reactions")
+            .delete()
+            .eq(
+              "photo_id",
+              currentPhotoId
+            )
+            .eq(
+              "user_id",
+              currentUser.id
+            );
 
-      reactionButtons.forEach(
-        reactionButton => {
-          reactionButton.disabled = false;
+        if (error) {
+          throw error;
         }
-      );
 
-      if (error) {
-        console.log(
-          "REACTION DELETE ERROR:",
-          error
-        );
-
-        showToast(
-          "The reaction could not be removed.",
-          "error"
-        );
-
+        await loadCurrentReaction();
         return;
       }
 
-      currentUserReaction = null;
+      const { error } =
+        await supabaseClient
+          .from("photo_reactions")
+          .upsert(
+            {
+              photo_id:
+                currentPhotoId,
 
-      reactionButtons.forEach(
-        reactionButton => {
-          reactionButton.classList.remove(
-            "selected"
+              user_id:
+                currentUser.id,
+
+              reaction:
+                chosenReaction
+            },
+            {
+              onConflict:
+                "photo_id,user_id"
+            }
           );
-        }
-      );
 
-      return;
-    }
-
-    const { error } =
-      await supabaseClient
-        .from("photo_reactions")
-        .upsert(
-          {
-            photo_id:
-              currentPhotoId,
-
-            user_id:
-              currentUser.id,
-
-            reaction:
-              chosenReaction
-          },
-          {
-            onConflict:
-              "photo_id,user_id"
-          }
-        );
-
-    reactionButtons.forEach(
-      reactionButton => {
-        reactionButton.disabled = false;
+      if (error) {
+        throw error;
       }
-    );
 
-    if (error) {
+      await loadCurrentReaction();
+    } catch (error) {
       console.log(
         "REACTION SAVE ERROR:",
         error
@@ -896,11 +882,13 @@ reactionButtons.forEach(button => {
         "The reaction could not be saved.",
         "error"
       );
-
-      return;
+    } finally {
+      reactionButtons.forEach(
+        reactionButton => {
+          reactionButton.disabled = false;
+        }
+      );
     }
-
-    await loadCurrentReaction();
   };
 });
 
