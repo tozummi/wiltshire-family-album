@@ -436,6 +436,10 @@ function openPhoto(photoIndex, direction = null) {
   currentPhotoUploaderId = photo.user_id;
   currentPhotoCaption = photo.caption || "";
 
+  deletePhotoButton.hidden =
+  String(photo.user_id) !==
+  String(currentUser.id);
+  
   editCaptionButton.hidden =
     photo.user_id !== currentUser.id;
 
@@ -625,6 +629,7 @@ function closeViewer() {
   viewer.classList.remove("open");
 
   captionEditor.hidden = true;
+  deletePhotoButton.hidden = true;
 
   editCaptionButton.hidden =
     currentPhotoUploaderId !==
