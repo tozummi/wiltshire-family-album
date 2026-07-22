@@ -197,6 +197,20 @@ document.getElementById(
   "continue-btn"
 ).onclick = continueToAlbum;
 
+logoutButton.onclick = () => {
+  localStorage.removeItem(
+    "familyAlbumUser"
+  );
+
+  currentUser = null;
+  selectedMember = null;
+
+  if (!viewer.hidden) {
+    closeViewer();
+  }
+
+  window.location.reload();
+};
 
 async function checkPin() {
   const enteredPin =
