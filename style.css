@@ -560,3 +560,22 @@ body.viewer-open {
   overscroll-behavior: contain;
   touch-action: pan-x;
 }
+#logout-btn {
+  margin: 0 0 12px;
+  padding: 7px 11px;
+
+  border: 1px solid #d8d1c7;
+  border-radius: 9px;
+
+  background: transparent;
+  color: #6f6253;
+
+  font-family: inherit;
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+#logout-btn:active {
+  transform: scale(0.97);
+}
