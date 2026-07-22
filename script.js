@@ -527,13 +527,16 @@ photoInput.onchange = async event => {
         `⏳ Uploading ${index + 1} of ${files.length}...`;
 
       try {
-        const formData = new FormData();
+        const stillImage =
+          await prepareStillImage(
+            file
+          );
 
-const cloudinaryData =
-  await uploadFileToCloudinary(
-    file,
-    "image"
-  );
+        const cloudinaryData =
+          await uploadFileToCloudinary(
+            stillImage,
+            "image"
+          );
 
         const {
           data: newPhoto,
@@ -554,22 +557,22 @@ const cloudinaryData =
               currentUser.name,
 
             status:
-  "approved",
+              "approved",
 
-media_type:
-  "photo",
+            media_type:
+              "photo",
 
-original_filename:
-  file.name,
+            original_filename:
+              stillImage.name,
 
-motion_url:
-  null,
+            motion_url:
+              null,
 
-motion_cloudinary_id:
-  null,
+            motion_cloudinary_id:
+              null,
 
-motion_filename:
-  null
+            motion_filename:
+              null
           })
           .select("id")
           .single();
@@ -579,7 +582,8 @@ motion_filename:
         }
 
         uploadedCount++;
-        newestPhotoId = newPhoto.id;
+        newestPhotoId =
+          newPhoto.id;
       } catch (error) {
         failedCount++;
 
@@ -592,7 +596,9 @@ motion_filename:
 
     event.target.value = "";
 
-    await loadGallery(newestPhotoId);
+    await loadGallery(
+      newestPhotoId
+    );
 
     if (
       uploadedCount > 0 &&
@@ -600,10 +606,14 @@ motion_filename:
     ) {
       showToast(
         `${uploadedCount} photo${
-          uploadedCount === 1 ? "" : "s"
+          uploadedCount === 1
+            ? ""
+            : "s"
         } uploaded successfully! 📸`
       );
-    } else if (uploadedCount > 0) {
+    } else if (
+      uploadedCount > 0
+    ) {
       showToast(
         `${uploadedCount} uploaded, ${failedCount} failed.`,
         "error"
@@ -615,7 +625,9 @@ motion_filename:
       );
     }
   } finally {
-    uploadButton.disabled = false;
+    uploadButton.disabled =
+      false;
+
     uploadButton.textContent =
       "Upload Photos 📸";
   }
