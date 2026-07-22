@@ -22,6 +22,7 @@ const viewer = document.getElementById("photo-viewer");
 
 const uploadButton = document.getElementById("upload-btn");
 const photoInput = document.getElementById("photo-input");
+const logoutButton = document.getElementById("logout-btn");
 
 const editCaptionButton =
   document.getElementById("edit-caption-btn");
