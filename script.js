@@ -271,7 +271,42 @@ function togglePin() {
       ? "text"
       : "password";
 }
+async function uploadFileToCloudinary(
+  file,
+  resourceType = "image"
+) {
+  const formData = new FormData();
 
+  formData.append("file", file);
+
+  formData.append(
+    "upload_preset",
+    CLOUDINARY_UPLOAD_PRESET
+  );
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`,
+    {
+      method: "POST",
+      body: formData
+    }
+  );
+
+  const cloudinaryData =
+    await response.json();
+
+  if (
+    !response.ok ||
+    !cloudinaryData.secure_url
+  ) {
+    throw new Error(
+      cloudinaryData.error?.message ||
+      "The file could not be uploaded."
+    );
+  }
+
+  return cloudinaryData;
+}
 
 uploadButton.onclick = () => {
   if (!uploadButton.disabled) {
