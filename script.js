@@ -435,6 +435,10 @@ function openPhoto(photoIndex, direction = null) {
       photo.created_at
     ).toLocaleDateString("en-GB");
 
+  document.body.classList.add(
+  "viewer-open"
+);
+  
   viewer.hidden = false;
   viewer.classList.add("open");
 
@@ -597,6 +601,10 @@ gallery.appendChild(card);
 
 
 function closeViewer() {
+  document.body.classList.remove(
+  "viewer-open"
+);
+  
   viewer.classList.remove("open");
 
   captionEditor.hidden = true;
