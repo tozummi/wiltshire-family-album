@@ -26,6 +26,22 @@ const logoutButton = document.getElementById("logout-btn");
 
 const deletePhotoButton =
   document.getElementById("delete-photo-btn");
+
+const deleteConfirmModal =
+  document.getElementById(
+    "delete-confirm-modal"
+  );
+
+const cancelDeleteButton =
+  document.getElementById(
+    "cancel-delete-btn"
+  );
+
+const confirmDeleteButton =
+  document.getElementById(
+    "confirm-delete-btn"
+  );
+
 const editCaptionButton =
   document.getElementById("edit-caption-btn");
 
