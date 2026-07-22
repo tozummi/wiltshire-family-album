@@ -24,6 +24,8 @@ const uploadButton = document.getElementById("upload-btn");
 const photoInput = document.getElementById("photo-input");
 const logoutButton = document.getElementById("logout-btn");
 
+const deletePhotoButton =
+  document.getElementById("delete-photo-btn");
 const editCaptionButton =
   document.getElementById("edit-caption-btn");
 
