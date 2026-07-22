@@ -712,7 +712,7 @@ cancelCaptionButton.onclick = () => {
     currentPhotoUploaderId !==
     currentUser.id;
 };
-deletePhotoButton.onclick = async event => {
+deletePhotoButton.onclick = event => {
   event.stopPropagation();
 
   if (
@@ -734,75 +734,107 @@ deletePhotoButton.onclick = async event => {
     return;
   }
 
-  const confirmed = window.confirm(
-    "Delete this photo permanently?\n\nThis cannot be undone."
-  );
+  deleteConfirmModal.hidden = false;
+};
 
-  if (!confirmed) {
-    return;
-  }
 
-  const photoIdToDelete =
-    currentPhotoId;
+cancelDeleteButton.onclick = () => {
+  deleteConfirmModal.hidden = true;
+};
 
-  deletePhotoButton.disabled = true;
-  deletePhotoButton.textContent = "⏳";
 
-  try {
-    const {
-      data,
-      error
-    } = await supabaseClient.functions.invoke(
-      "delete-photo",
-      {
-        body: {
-          photoId: photoIdToDelete,
-          userId: currentUser.id
-        }
-      }
-    );
-
-    if (error) {
-      throw error;
-    }
-
-    if (!data?.success) {
-      throw new Error(
-        data?.error ||
-        "The photo could not be deleted."
-      );
-    }
-
-    galleryPhotos =
-      galleryPhotos.filter(
-        photo =>
-          String(photo.id) !==
-          String(photoIdToDelete)
-      );
-
-    closeViewer();
-
-    await loadGallery();
-
-    showToast(
-      "Photo deleted permanently 🗑️"
-    );
-  } catch (error) {
-    console.log(
-      "PHOTO DELETE ERROR:",
-      error
-    );
-
-    showToast(
-      error.message ||
-      "The photo could not be deleted.",
-      "error"
-    );
-  } finally {
-    deletePhotoButton.disabled = false;
-    deletePhotoButton.textContent = "🗑️";
+deleteConfirmModal.onclick = event => {
+  if (
+    event.target ===
+    deleteConfirmModal
+  ) {
+    deleteConfirmModal.hidden = true;
   }
 };
+
+
+confirmDeleteButton.onclick =
+  async () => {
+    if (
+      !currentPhotoId ||
+      !currentUser
+    ) {
+      deleteConfirmModal.hidden = true;
+      return;
+    }
+
+    const photoIdToDelete =
+      currentPhotoId;
+
+    confirmDeleteButton.disabled = true;
+    confirmDeleteButton.textContent =
+      "Deleting...";
+
+    deletePhotoButton.disabled = true;
+
+    try {
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.functions.invoke(
+          "delete-photo",
+          {
+            body: {
+              photoId: photoIdToDelete,
+              userId: currentUser.id
+            }
+          }
+        );
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data?.success) {
+        throw new Error(
+          data?.error ||
+          "The photo could not be deleted."
+        );
+      }
+
+      galleryPhotos =
+        galleryPhotos.filter(
+          photo =>
+            String(photo.id) !==
+            String(photoIdToDelete)
+        );
+
+      deleteConfirmModal.hidden = true;
+
+      closeViewer();
+
+      await loadGallery();
+
+      showToast(
+        "Photo deleted permanently 🗑️"
+      );
+    } catch (error) {
+      console.log(
+        "PHOTO DELETE ERROR:",
+        error
+      );
+
+      showToast(
+        error.message ||
+        "The photo could not be deleted.",
+        "error"
+      );
+    } finally {
+      confirmDeleteButton.disabled = false;
+      confirmDeleteButton.textContent =
+        "Delete permanently";
+
+      deletePhotoButton.disabled = false;
+      deletePhotoButton.textContent =
+        "🗑️";
+    }
+  };
 
 saveCaptionButton.onclick = async () => {
   const newCaption =
