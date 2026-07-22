@@ -551,3 +551,12 @@ right: 14px;
     opacity: 1;
   }
 }
+body.viewer-open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.photo-viewer {
+  overscroll-behavior: contain;
+  touch-action: pan-x;
+}
