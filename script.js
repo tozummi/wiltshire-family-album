@@ -844,28 +844,42 @@ reactionButtons.forEach(button => {
 
     try {
       if (
-        currentUserReaction ===
-        chosenReaction
-      ) {
-        const { error } =
-          await supabaseClient
-            .from("photo_reactions")
-            .delete()
-            .eq(
-              "photo_id",
-              currentPhotoId
-            )
-            .eq(
-              "user_id",
-              currentUser.id
-            );
+  currentUserReaction ===
+  chosenReaction
+) {
+  const {
+    data: deletedReaction,
+    error
+  } = await supabaseClient
+    .from("photo_reactions")
+    .delete()
+    .eq(
+      "photo_id",
+      currentPhotoId
+    )
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+    .select();
 
-        if (error) {
-          throw error;
-        }
+  if (error) {
+    throw error;
+  }
 
-        await loadCurrentReaction();
-        return;
+  if (
+    !deletedReaction ||
+    deletedReaction.length === 0
+  ) {
+    throw new Error(
+      "Supabase did not allow the reaction to be deleted."
+    );
+  }
+
+  currentUserReaction = null;
+
+  await loadCurrentReaction();
+  return;
       }
 
       const { error } =
