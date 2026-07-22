@@ -271,6 +271,194 @@ function togglePin() {
       ? "text"
       : "password";
 }
+function isHeicOrHeif(file) {
+  const fileName =
+    file.name.toLowerCase();
+
+  const fileType =
+    file.type.toLowerCase();
+
+  return (
+    fileType === "image/heic" ||
+    fileType === "image/heif" ||
+    fileName.endsWith(".heic") ||
+    fileName.endsWith(".heif")
+  );
+}
+
+
+function makeJpegFileName(
+  originalFileName
+) {
+  const baseName =
+    originalFileName.replace(
+      /\.[^/.]+$/,
+      ""
+    );
+
+  return `${baseName}.jpg`;
+}
+
+
+function canvasToJpegBlob(
+  canvas,
+  quality = 0.94
+) {
+  return new Promise(
+    (resolve, reject) => {
+      canvas.toBlob(
+        blob => {
+          if (!blob) {
+            reject(
+              new Error(
+                "The still image could not be created."
+              )
+            );
+
+            return;
+          }
+
+          resolve(blob);
+        },
+        "image/jpeg",
+        quality
+      );
+    }
+  );
+}
+
+
+async function convertBlobToJpeg(
+  sourceBlob,
+  originalFileName
+) {
+  let imageBitmap;
+
+  try {
+    imageBitmap =
+      await createImageBitmap(
+        sourceBlob,
+        {
+          imageOrientation:
+            "from-image"
+        }
+      );
+  } catch (error) {
+    throw new Error(
+      "This photo could not be read by your browser."
+    );
+  }
+
+  const canvas =
+    document.createElement(
+      "canvas"
+    );
+
+  canvas.width =
+    imageBitmap.width;
+
+  canvas.height =
+    imageBitmap.height;
+
+  const context =
+    canvas.getContext(
+      "2d",
+      {
+        alpha: false
+      }
+    );
+
+  if (!context) {
+    imageBitmap.close();
+
+    throw new Error(
+      "The still image could not be prepared."
+    );
+  }
+
+  context.fillStyle =
+    "#ffffff";
+
+  context.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  context.drawImage(
+    imageBitmap,
+    0,
+    0
+  );
+
+  imageBitmap.close();
+
+  const jpegBlob =
+    await canvasToJpegBlob(
+      canvas,
+      0.94
+    );
+
+  return new File(
+    [jpegBlob],
+    makeJpegFileName(
+      originalFileName
+    ),
+    {
+      type: "image/jpeg",
+      lastModified: Date.now()
+    }
+  );
+}
+
+
+async function prepareStillImage(
+  originalFile
+) {
+  if (!originalFile) {
+    throw new Error(
+      "No photo was selected."
+    );
+  }
+
+  let readableImage =
+    originalFile;
+
+  if (
+    isHeicOrHeif(
+      originalFile
+    )
+  ) {
+    if (
+      typeof heic2any !==
+      "function"
+    ) {
+      throw new Error(
+        "Apple photo conversion is unavailable. Please refresh the page and try again."
+      );
+    }
+
+    const convertedResult =
+      await heic2any({
+        blob: originalFile,
+        toType: "image/jpeg",
+        quality: 0.94
+      });
+
+    readableImage =
+      Array.isArray(
+        convertedResult
+      )
+        ? convertedResult[0]
+        : convertedResult;
+  }
+
+  return await convertBlobToJpeg(
+    readableImage,
+    originalFile.name
+  );
+}
 async function uploadFileToCloudinary(
   file,
   resourceType = "image"
