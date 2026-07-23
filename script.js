@@ -1109,6 +1109,11 @@ function openPhoto(
       "viewer-image"
     );
 
+  const viewerVideo =
+  document.getElementById(
+    "viewer-video"
+  );
+
   const viewerUploader =
     document.getElementById(
       "viewer-uploader"
