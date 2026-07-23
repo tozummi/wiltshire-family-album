@@ -1429,6 +1429,7 @@ async function loadGallery(
                   aria-label="Play video"
                   style="
                     position: absolute;
+                    z-index: 3;
                     top: 50%;
                     left: 50%;
                     display: flex;
@@ -1468,6 +1469,7 @@ async function loadGallery(
                   } video duration"
                   style="
                     position: absolute;
+                    z-index: 3;
                     left: 10px;
                     bottom: 10px;
                     padding: 4px 7px;
@@ -1498,6 +1500,7 @@ async function loadGallery(
             title="${uploaderName}"
             style="
               position: absolute;
+              z-index: 3;
               right: 10px;
               bottom: 10px;
               display: flex;
