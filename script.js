@@ -1279,6 +1279,245 @@ function formatVideoDuration(
   )}`;
 }
 
+function stopGalleryPreview(
+  markAsPlayed = false
+) {
+  if (previewTimeout) {
+    clearTimeout(
+      previewTimeout
+    );
+
+    previewTimeout = null;
+  }
+
+  if (activePreviewVideo) {
+    activePreviewVideo.pause();
+    activePreviewVideo.currentTime =
+      0;
+  }
+
+  if (activePreviewCard) {
+    activePreviewCard.classList.remove(
+      "previewing"
+    );
+
+    if (markAsPlayed) {
+      activePreviewCard.dataset.previewPlayed =
+        "true";
+    }
+  }
+
+  activePreviewVideo = null;
+  activePreviewCard = null;
+}
+
+
+function startGalleryPreview(
+  card
+) {
+  if (
+    !card ||
+    activePreviewCard ||
+    card.dataset.previewPlayed ===
+      "true"
+  ) {
+    return;
+  }
+
+  const video =
+    card.querySelector(
+      ".gallery-video-preview"
+    );
+
+  if (!video) {
+    return;
+  }
+
+  activePreviewCard = card;
+  activePreviewVideo = video;
+
+  video.muted = true;
+  video.currentTime = 0;
+
+  card.classList.add(
+    "previewing"
+  );
+
+  const playPromise =
+    video.play();
+
+  if (
+    playPromise &&
+    typeof playPromise.catch ===
+      "function"
+  ) {
+    playPromise.catch(
+      () => {
+        stopGalleryPreview(
+          false
+        );
+      }
+    );
+  }
+
+  previewTimeout =
+    setTimeout(
+      () => {
+        stopGalleryPreview(
+          true
+        );
+      },
+      PREVIEW_DURATION
+    );
+
+  video.onended = () => {
+    stopGalleryPreview(
+      true
+    );
+  };
+}
+
+
+function initialiseGalleryPreviews() {
+  if (previewObserver) {
+    previewObserver.disconnect();
+  }
+
+  stopGalleryPreview(
+    false
+  );
+
+  const visibleVideoCards =
+    new Map();
+
+  function choosePreviewCard() {
+    if (
+      activePreviewCard ||
+      visibleVideoCards.size === 0
+    ) {
+      return;
+    }
+
+    const screenCentre =
+      window.innerHeight / 2;
+
+    const eligibleCards =
+      Array.from(
+        visibleVideoCards.keys()
+      ).filter(
+        card =>
+          card.dataset.previewPlayed !==
+          "true"
+      );
+
+    eligibleCards.sort(
+      (
+        firstCard,
+        secondCard
+      ) => {
+        const firstRect =
+          firstCard.getBoundingClientRect();
+
+        const secondRect =
+          secondCard.getBoundingClientRect();
+
+        const firstCentre =
+          firstRect.top +
+          firstRect.height / 2;
+
+        const secondCentre =
+          secondRect.top +
+          secondRect.height / 2;
+
+        return (
+          Math.abs(
+            firstCentre -
+              screenCentre
+          ) -
+          Math.abs(
+            secondCentre -
+              screenCentre
+          )
+        );
+      }
+    );
+
+    startGalleryPreview(
+      eligibleCards[0]
+    );
+  }
+
+  previewObserver =
+    new IntersectionObserver(
+      entries => {
+        entries.forEach(
+          entry => {
+            const card =
+              entry.target;
+
+            if (
+              entry.intersectionRatio >=
+              0.6
+            ) {
+              visibleVideoCards.set(
+                card,
+                entry.intersectionRatio
+              );
+            } else {
+              visibleVideoCards.delete(
+                card
+              );
+
+              if (
+                activePreviewCard ===
+                card
+              ) {
+                stopGalleryPreview(
+                  false
+                );
+              }
+
+              if (
+                entry.intersectionRatio <
+                0.15
+              ) {
+                card.dataset.previewPlayed =
+                  "false";
+              }
+            }
+          }
+        );
+
+        requestAnimationFrame(
+          choosePreviewCard
+        );
+      },
+      {
+        threshold: [
+          0,
+          0.15,
+          0.6,
+          1
+        ]
+      }
+    );
+
+  gallery
+    .querySelectorAll(
+      '.photo-card[data-media-type="video"]'
+    )
+    .forEach(
+      card => {
+        card.dataset.previewPlayed =
+          "false";
+
+        previewObserver.observe(
+          card
+        );
+      }
+    );
+}
+
 async function loadGallery(
   newMediaId = null
 ) {
@@ -1569,6 +1808,9 @@ async function loadGallery(
     }
   );
 
+
+  initialiseGalleryPreviews();
+  
   if (newMediaId) {
     requestAnimationFrame(
       () => {
