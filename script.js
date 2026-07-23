@@ -1504,6 +1504,25 @@ async function loadGallery(
 // ============================================================
 
 function closeViewer() {
+  const viewerVideo =
+  document.getElementById(
+    "viewer-video"
+  );
+
+viewerVideo.pause();
+
+viewerVideo.currentTime =
+  0;
+
+viewerVideo.removeAttribute(
+  "src"
+);
+
+viewerVideo.load();
+
+viewerVideo.hidden =
+  true;
+  
   document.body.classList.remove(
     "viewer-open"
   );
