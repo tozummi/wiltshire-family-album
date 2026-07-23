@@ -1144,8 +1144,40 @@ function openPhoto(
     );
   }
 
+  const isVideo =
+  photo.media_type ===
+  "video";
+
+if (isVideo) {
+  viewerImage.hidden =
+    true;
+
+  viewerVideo.hidden =
+    false;
+
+  viewerVideo.src =
+    photo.video_url;
+
+  viewerVideo.currentTime =
+    0;
+} else {
+  viewerVideo.pause();
+
+  viewerVideo.removeAttribute(
+    "src"
+  );
+
+  viewerVideo.load();
+
+  viewerVideo.hidden =
+    true;
+
+  viewerImage.hidden =
+    false;
+
   viewerImage.src =
     photo.image_url;
+}
 
   viewerCaption.textContent =
     photo.caption || "";
