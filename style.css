@@ -944,6 +944,10 @@ button {
   }
                    }
 
+.photo-image-wrapper {
+  overflow: hidden;
+}
+
 .gallery-thumbnail,
 .gallery-video-preview {
   display: block;
@@ -952,6 +956,18 @@ button {
   object-fit: cover;
 }
 
-.gallery-video-preview[hidden] {
-  display: none;
+.gallery-thumbnail {
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+
+.gallery-video-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
 }
