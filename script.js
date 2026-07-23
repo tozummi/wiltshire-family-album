@@ -1441,6 +1441,43 @@ async function loadGallery(
               : ""
           }
 
+                    ${
+            isVideo
+              ? `
+                <span
+                  class="video-duration-badge"
+                  aria-label="${
+                    formatVideoDuration(
+                      media.video_duration_seconds
+                    )
+                  } video duration"
+                  style="
+                    position: absolute;
+                    left: 10px;
+                    bottom: 10px;
+                    padding: 4px 7px;
+                    border-radius: 6px;
+                    background:
+                      rgba(0, 0, 0, 0.72);
+                    color: white;
+                    font-size: 12px;
+                    font-weight: 600;
+                    line-height: 1;
+                    letter-spacing: 0.2px;
+                    box-shadow:
+                      0 2px 6px
+                      rgba(0, 0, 0, 0.25);
+                    pointer-events: none;
+                  "
+                >
+                  ${formatVideoDuration(
+                    media.video_duration_seconds
+                  )}
+                </span>
+              `
+              : ""
+                    }
+
           <span
             class="photo-uploader-badge"
             title="${uploaderName}"
