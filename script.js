@@ -1064,11 +1064,10 @@ mediaInput.onchange =
           "error"
         );
       } else {
-        showToast(
-          "None of the selected files could be uploaded.",
-          "error"
-        );
-      }
+  console.log(
+    "All selected files failed to upload."
+  );
+}
     } finally {
       uploadButton.disabled =
         false;
