@@ -19,6 +19,13 @@ let currentPhotoUploaderId = null;
 let currentPhotoCaption = "";
 let selectedMember = null;
 let currentUser = null;
+let activePreviewVideo = null;
+let activePreviewCard = null;
+let previewTimeout = null;
+let previewObserver = null;
+
+const PREVIEW_DURATION =
+  5000;
 
 const savedUser = localStorage.getItem("familyAlbumUser");
 
