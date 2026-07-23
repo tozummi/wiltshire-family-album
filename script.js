@@ -643,7 +643,7 @@ uploadButton.onclick = () => {
   if (
     !uploadButton.disabled
   ) {
-    photoInput.click();
+    mediaInput.click();
   }
 };
 
@@ -652,7 +652,7 @@ uploadButton.onclick = () => {
 // PHOTO UPLOAD HANDLER
 // ============================================================
 
-photoInput.onchange =
+mediaInput.onchange =
   async event => {
     const files =
       Array.from(
