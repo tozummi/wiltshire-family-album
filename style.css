@@ -971,3 +971,25 @@ button {
   pointer-events: none;
   transition: opacity 0.45s ease;
 }
+
+.photo-card.previewing
+.gallery-thumbnail {
+  opacity: 0;
+}
+
+.photo-card.previewing
+.gallery-video-preview {
+  opacity: 1;
+}
+
+.video-play-badge,
+.video-duration-badge {
+  transition: opacity 0.3s ease;
+}
+
+.photo-card.previewing
+.video-play-badge,
+.photo-card.previewing
+.video-duration-badge {
+  opacity: 0;
+}
