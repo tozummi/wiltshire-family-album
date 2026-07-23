@@ -943,3 +943,15 @@ button {
     right: 14px;
   }
                    }
+
+.gallery-thumbnail,
+.gallery-video-preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-video-preview[hidden] {
+  display: none;
+}
