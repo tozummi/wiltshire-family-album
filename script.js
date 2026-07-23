@@ -1397,7 +1397,8 @@ async function loadGallery(
             width: 100%;
           "
         >
-          <img
+                    <img
+            class="gallery-thumbnail"
             src="${thumbnailUrl || ""}"
             alt="${
               isVideo
@@ -1405,6 +1406,21 @@ async function loadGallery(
                 : "Photo"
             } uploaded by ${uploaderName}"
           >
+
+          ${
+            isVideo
+              ? `
+                <video
+                  class="gallery-video-preview"
+                  src="${media.video_url || ""}"
+                  muted
+                  playsinline
+                  preload="metadata"
+                  hidden
+                ></video>
+              `
+              : ""
+          }
 
           ${
             isVideo
