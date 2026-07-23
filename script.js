@@ -1198,7 +1198,7 @@ function openPhoto(
 // ============================================================
 
 async function loadGallery(
-  newPhotoId = null
+  newMediaId = null
 ) {
   gallery.innerHTML = `
     <p class="gallery-message">
@@ -1214,12 +1214,17 @@ async function loadGallery(
     .select(`
       id,
       image_url,
+      video_url,
+      video_thumbnail_url,
+      video_duration_seconds,
+      media_type,
       user_id,
       user_name,
       status,
       created_at,
       caption,
       cloudinary_id,
+      video_cloudinary_id,
       uploader:family_members (
         name,
         initials,
@@ -1267,15 +1272,15 @@ async function loadGallery(
 
   data.forEach(
     (
-      photo,
-      photoIndex
+      media,
+      mediaIndex
     ) => {
       const uploader =
-        photo.uploader;
+        media.uploader;
 
       const uploaderName =
         uploader?.name ||
-        photo.user_name ||
+        media.user_name ||
         "Family member";
 
       const uploaderInitials =
@@ -1286,6 +1291,15 @@ async function loadGallery(
         uploader?.colour ||
         "#777777";
 
+      const isVideo =
+        media.media_type ===
+        "video";
+
+      const thumbnailUrl =
+        isVideo
+          ? media.video_thumbnail_url
+          : media.image_url;
+
       const card =
         document.createElement(
           "div"
@@ -1295,7 +1309,10 @@ async function loadGallery(
         "photo-card";
 
       card.dataset.photoId =
-        photo.id;
+        media.id;
+
+      card.dataset.mediaType =
+        media.media_type;
 
       card.innerHTML = `
         <div
@@ -1306,9 +1323,48 @@ async function loadGallery(
           "
         >
           <img
-            src="${photo.image_url}"
-            alt="Photo uploaded by ${uploaderName}"
+            src="${thumbnailUrl || ""}"
+            alt="${
+              isVideo
+                ? "Video"
+                : "Photo"
+            } uploaded by ${uploaderName}"
           >
+
+          ${
+            isVideo
+              ? `
+                <span
+                  class="video-play-badge"
+                  aria-label="Play video"
+                  style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 58px;
+                    height: 58px;
+                    border: 3px solid white;
+                    border-radius: 50%;
+                    background:
+                      rgba(0, 0, 0, 0.55);
+                    color: white;
+                    font-size: 25px;
+                    box-shadow:
+                      0 3px 12px
+                      rgba(0, 0, 0, 0.35);
+                    transform:
+                      translate(-50%, -50%);
+                    pointer-events: none;
+                  "
+                >
+                  ▶
+                </span>
+              `
+              : ""
+          }
 
           <span
             class="photo-uploader-badge"
@@ -1340,12 +1396,17 @@ async function loadGallery(
         </div>
 
         <p>
-          📸 ${uploaderName}
+          ${
+            isVideo
+              ? "🎥"
+              : "📸"
+          }
+          ${uploaderName}
         </p>
 
         <small>
           ${new Date(
-            photo.created_at
+            media.created_at
           ).toLocaleDateString(
             "en-GB"
           )}
@@ -1353,8 +1414,16 @@ async function loadGallery(
       `;
 
       card.onclick = () => {
+        if (isVideo) {
+          showToast(
+            "Video viewer coming next 🎥"
+          );
+
+          return;
+        }
+
         openPhoto(
-          photoIndex
+          mediaIndex
         );
 
         history.pushState(
@@ -1371,16 +1440,16 @@ async function loadGallery(
     }
   );
 
-  if (newPhotoId) {
+  if (newMediaId) {
     requestAnimationFrame(
       () => {
-        const newPhotoCard =
+        const newMediaCard =
           gallery.querySelector(
-            `[data-photo-id="${newPhotoId}"]`
+            `[data-photo-id="${newMediaId}"]`
           );
 
-        if (newPhotoCard) {
-          newPhotoCard.scrollIntoView({
+        if (newMediaCard) {
+          newMediaCard.scrollIntoView({
             behavior: "smooth",
             block: "center"
           });
@@ -1389,6 +1458,7 @@ async function loadGallery(
     );
   }
 }
+
 
 
 // ============================================================
