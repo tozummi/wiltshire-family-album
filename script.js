@@ -1646,6 +1646,33 @@ deletePhotoButton.onclick =
       return;
     }
 
+    const currentMedia =
+  galleryPhotos[
+    currentPhotoIndex
+  ];
+
+const isVideo =
+  currentMedia?.media_type ===
+  "video";
+
+const mediaWord =
+  isVideo
+    ? "video"
+    : "photo";
+
+document.getElementById(
+  "delete-confirm-title"
+).textContent =
+  `Delete this ${mediaWord}?`;
+
+document.getElementById(
+  "delete-confirm-message"
+).textContent =
+  `This ${mediaWord} will be permanently removed from the family album.`;
+
+cancelDeleteButton.textContent =
+  `Keep ${mediaWord}`;
+    
     deleteConfirmModal.hidden =
       false;
   };
