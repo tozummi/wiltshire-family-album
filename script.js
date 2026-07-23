@@ -649,7 +649,110 @@ uploadButton.onclick = () => {
 
 
 // ============================================================
-// PHOTO UPLOAD HANDLER
+// VIDEO HELPERS
+// ============================================================
+
+function getVideoDuration(file) {
+  return new Promise(
+    (resolve, reject) => {
+      const video =
+        document.createElement(
+          "video"
+        );
+
+      const videoUrl =
+        URL.createObjectURL(file);
+
+      video.preload =
+        "metadata";
+
+      video.onloadedmetadata =
+        () => {
+          const duration =
+            video.duration;
+
+          URL.revokeObjectURL(
+            videoUrl
+          );
+
+          if (
+            !Number.isFinite(
+              duration
+            )
+          ) {
+            reject(
+              new Error(
+                "The video duration could not be read."
+              )
+            );
+
+            return;
+          }
+
+          resolve(duration);
+        };
+
+      video.onerror =
+        () => {
+          URL.revokeObjectURL(
+            videoUrl
+          );
+
+          reject(
+            new Error(
+              "This video could not be read."
+            )
+          );
+        };
+
+      video.src =
+        videoUrl;
+    }
+  );
+}
+
+
+async function uploadVideoToCloudinary(
+  file
+) {
+  const formData =
+    new FormData();
+
+  formData.append(
+    "file",
+    file
+  );
+
+  formData.append(
+    "upload_preset",
+    VIDEO_UPLOAD_PRESET
+  );
+
+  const response =
+    await fetch(
+      `https://api.cloudinary.com/v1_1/${VIDEO_CLOUD_NAME}/video/upload`,
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+  const data =
+    await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.error?.message ||
+      "The video upload failed."
+    );
+  }
+
+  return data;
+}
+
+
+// ============================================================
+// PHOTO AND VIDEO UPLOAD HANDLER
 // ============================================================
 
 mediaInput.onchange =
@@ -668,9 +771,17 @@ mediaInput.onchange =
     uploadButton.disabled =
       true;
 
-    let uploadedCount = 0;
-    let failedCount = 0;
-    let newestPhotoId = null;
+    let uploadedPhotoCount =
+      0;
+
+    let uploadedVideoCount =
+      0;
+
+    let failedCount =
+      0;
+
+    let newestMediaId =
+      null;
 
     try {
       for (
@@ -685,64 +796,197 @@ mediaInput.onchange =
           `⏳ Uploading ${index + 1} of ${files.length}...`;
 
         try {
-          const stillImage =
-            await prepareStillImage(
-              file
+          const isPhoto =
+            file.type.startsWith(
+              "image/"
             );
 
-          const cloudinaryData =
-            await uploadFileToCloudinary(
-              stillImage,
-              "image"
+          const isVideo =
+            file.type.startsWith(
+              "video/"
             );
 
-          const {
-            data: newPhoto,
-            error
-          } = await supabaseClient
-            .from("photos")
-            .insert({
-              image_url:
-                cloudinaryData.secure_url,
-
-              cloudinary_id:
-                cloudinaryData.public_id,
-
-              user_id:
-                currentUser.id,
-
-              user_name:
-                currentUser.name,
-
-              status:
-                "approved",
-
-              media_type:
-                "photo",
-
-              original_filename:
-                stillImage.name,
-
-              motion_url:
-                null,
-
-              motion_cloudinary_id:
-                null,
-
-              motion_filename:
-                null
-            })
-            .select("id")
-            .single();
-
-          if (error) {
-            throw error;
+          if (
+            !isPhoto &&
+            !isVideo
+          ) {
+            throw new Error(
+              "This file type is not supported."
+            );
           }
 
-          uploadedCount++;
 
-          newestPhotoId =
-            newPhoto.id;
+          // ------------------------------------------
+          // PHOTO UPLOAD
+          // ------------------------------------------
+
+          if (isPhoto) {
+            const stillImage =
+              await prepareStillImage(
+                file
+              );
+
+            const cloudinaryData =
+              await uploadFileToCloudinary(
+                stillImage,
+                "image"
+              );
+
+            const {
+              data: newPhoto,
+              error
+            } = await supabaseClient
+              .from("photos")
+              .insert({
+                image_url:
+                  cloudinaryData.secure_url,
+
+                cloudinary_id:
+                  cloudinaryData.public_id,
+
+                user_id:
+                  currentUser.id,
+
+                user_name:
+                  currentUser.name,
+
+                status:
+                  "approved",
+
+                media_type:
+                  "photo",
+
+                original_filename:
+                  stillImage.name,
+
+                motion_url:
+                  null,
+
+                motion_cloudinary_id:
+                  null,
+
+                motion_filename:
+                  null
+              })
+              .select("id")
+              .single();
+
+            if (error) {
+              throw error;
+            }
+
+            uploadedPhotoCount++;
+
+            newestMediaId =
+              newPhoto.id;
+          }
+
+
+          // ------------------------------------------
+          // VIDEO UPLOAD
+          // ------------------------------------------
+
+          if (isVideo) {
+            if (
+              file.size >
+              MAX_VIDEO_SIZE_BYTES
+            ) {
+              throw new Error(
+                `${file.name} is larger than ${MAX_VIDEO_SIZE_MB} MB.`
+              );
+            }
+
+            const videoDuration =
+              await getVideoDuration(
+                file
+              );
+
+            if (
+              videoDuration >
+              MAX_VIDEO_DURATION_SECONDS
+            ) {
+              throw new Error(
+                `${file.name} is longer than 5 minutes.`
+              );
+            }
+
+            const cloudinaryData =
+              await uploadVideoToCloudinary(
+                file
+              );
+
+            const thumbnailUrl =
+              cloudinaryData.secure_url
+                .replace(
+                  /\.[^/.]+$/,
+                  ".jpg"
+                );
+
+            const {
+              data: newVideo,
+              error
+            } = await supabaseClient
+              .from("photos")
+              .insert({
+                image_url:
+                  null,
+
+                cloudinary_id:
+                  null,
+
+                video_url:
+                  cloudinaryData.secure_url,
+
+                video_cloudinary_id:
+                  cloudinaryData.public_id,
+
+                video_thumbnail_url:
+                  thumbnailUrl,
+
+                video_duration_seconds:
+                  Math.round(
+                    videoDuration
+                  ),
+
+                file_size_bytes:
+                  file.size,
+
+                user_id:
+                  currentUser.id,
+
+                user_name:
+                  currentUser.name,
+
+                status:
+                  "approved",
+
+                media_type:
+                  "video",
+
+                original_filename:
+                  file.name,
+
+                motion_url:
+                  null,
+
+                motion_cloudinary_id:
+                  null,
+
+                motion_filename:
+                  null
+              })
+              .select("id")
+              .single();
+
+            if (error) {
+              throw error;
+            }
+
+            uploadedVideoCount++;
+
+            newestMediaId =
+              newVideo.id;
+          }
         } catch (error) {
           failedCount++;
 
@@ -750,36 +994,72 @@ mediaInput.onchange =
             `UPLOAD ERROR FOR ${file.name}:`,
             error
           );
+
+          console.log(
+            error.message
+          );
         }
       }
 
-      event.target.value = "";
+      event.target.value =
+        "";
 
       await loadGallery(
-        newestPhotoId
+        newestMediaId
       );
+
+      const uploadedCount =
+        uploadedPhotoCount +
+        uploadedVideoCount;
+
+      const uploadedParts =
+        [];
+
+      if (
+        uploadedPhotoCount > 0
+      ) {
+        uploadedParts.push(
+          `${uploadedPhotoCount} photo${
+            uploadedPhotoCount === 1
+              ? ""
+              : "s"
+          }`
+        );
+      }
+
+      if (
+        uploadedVideoCount > 0
+      ) {
+        uploadedParts.push(
+          `${uploadedVideoCount} video${
+            uploadedVideoCount === 1
+              ? ""
+              : "s"
+          }`
+        );
+      }
 
       if (
         uploadedCount > 0 &&
         failedCount === 0
       ) {
         showToast(
-          `${uploadedCount} photo${
-            uploadedCount === 1
-              ? ""
-              : "s"
-          } uploaded successfully! 📸`
+          `${uploadedParts.join(
+            " and "
+          )} uploaded successfully! 📸🎥`
         );
       } else if (
         uploadedCount > 0
       ) {
         showToast(
-          `${uploadedCount} uploaded, ${failedCount} failed.`,
+          `${uploadedParts.join(
+            " and "
+          )} uploaded, ${failedCount} failed.`,
           "error"
         );
       } else {
         showToast(
-          "None of the photos could be uploaded.",
+          "None of the selected files could be uploaded.",
           "error"
         );
       }
@@ -791,6 +1071,7 @@ mediaInput.onchange =
         "Upload Photos or Videos 📸🎥";
     }
   };
+        
 
 // ============================================================
 // PHOTO VIEWER
