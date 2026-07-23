@@ -1451,25 +1451,17 @@ async function loadGallery(
       `;
 
       card.onclick = () => {
-        if (isVideo) {
-          showToast(
-            "Video viewer coming next 🎥"
-          );
+  openPhoto(
+    mediaIndex
+  );
 
-          return;
-        }
-
-        openPhoto(
-          mediaIndex
-        );
-
-        history.pushState(
-          {
-            photoViewer: true
-          },
-          ""
-        );
-      };
+  history.pushState(
+    {
+      photoViewer: true
+    },
+    ""
+  );
+};
 
       gallery.appendChild(
         card
