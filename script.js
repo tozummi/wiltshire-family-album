@@ -36,8 +36,8 @@ const viewer =
 const uploadButton =
   document.getElementById("upload-btn");
 
-const photoInput =
-  document.getElementById("photo-input");
+const mediaInput =
+  document.getElementById("media-input");
 
 const logoutButton =
   document.getElementById("logout-btn");
