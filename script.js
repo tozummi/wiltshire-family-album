@@ -1416,7 +1416,6 @@ async function loadGallery(
                   muted
                   playsinline
                   preload="metadata"
-                  hidden
                 ></video>
               `
               : ""
