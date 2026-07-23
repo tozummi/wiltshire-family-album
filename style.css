@@ -345,6 +345,10 @@ button {
   background: black;
 }
 
+#viewer-video[hidden] {
+  display: none;
+}
+
 /* ==========================================================
    VIEWER CLOSE AND DELETE BUTTONS
 ========================================================== */
