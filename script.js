@@ -1243,6 +1243,35 @@ if (isVideo) {
 // GALLERY LOADING
 // ============================================================
 
+function formatVideoDuration(
+  durationSeconds
+) {
+  const totalSeconds =
+    Math.max(
+      0,
+      Math.round(
+        Number(
+          durationSeconds
+        ) || 0
+      )
+    );
+
+  const minutes =
+    Math.floor(
+      totalSeconds / 60
+    );
+
+  const seconds =
+    totalSeconds % 60;
+
+  return `${minutes}:${String(
+    seconds
+  ).padStart(
+    2,
+    "0"
+  )}`;
+}
+
 async function loadGallery(
   newMediaId = null
 ) {
