@@ -2,8 +2,8 @@
 // SUPABASE SETTINGS
 // ============================================================
 
-const SUPABASE_URL = "YOUR_EXISTING_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_EXISTING_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://qoeiqvoaqqfheojaanad.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvZWlxdm9hcXFmaGVvamFhbmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0ODMzODEsImV4cCI6MjEwMDA1OTM4MX0.fAkhkc2m7VpVo5Z59LSAJK-_No0xNnt6eLX3U4oSPvg";
 
 
 // ============================================================
