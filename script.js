@@ -1596,11 +1596,6 @@ viewerVideo.pause();
 viewerVideo.currentTime =
   0;
 
-viewerVideo.removeAttribute(
-  "src"
-);
-
-viewerVideo.load();
 
 viewerVideo.hidden =
   true;
