@@ -788,7 +788,7 @@ mediaInput.onchange =
         false;
 
       uploadButton.textContent =
-        "Upload Photos 📸";
+        "Upload Photos or Videos 📸🎥";
     }
   };
 
