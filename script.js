@@ -1745,9 +1745,16 @@ confirmDeleteButton.onclick =
 
       await loadGallery();
 
-      showToast(
-        "Photo deleted permanently 🗑️"
-      );
+      const deletedMediaType =
+  galleryPhotos[
+    currentPhotoIndex
+  ]?.media_type === "video"
+    ? "Video"
+    : "Photo";
+
+showToast(
+  `${deletedMediaType} deleted permanently 🗑️`
+);
     } catch (error) {
       console.log(
         "PHOTO DELETE ERROR:",
@@ -1756,7 +1763,7 @@ confirmDeleteButton.onclick =
 
       showToast(
         error.message ||
-        "The photo could not be deleted.",
+        "The photo or video could not be deleted.",
         "error"
       );
     } finally {
