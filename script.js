@@ -1780,7 +1780,7 @@ confirmDeleteButton.onclick =
     : "Photo";
 
 showToast(
-  `${deletedMediaType} deleted permanently 🗑️`
+  "Removed from the family album 🗑️"
 );
     } catch (error) {
       console.log(
