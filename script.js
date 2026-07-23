@@ -998,6 +998,11 @@ mediaInput.onchange =
           console.log(
             error.message
           );
+          showToast(
+  error.message ||
+  "The video upload failed.",
+  "error"
+);
         }
       }
 
