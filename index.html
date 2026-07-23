@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+  <!-- ======================================================
+       BASIC PAGE SETTINGS
+  ======================================================= -->
+
   <meta charset="UTF-8">
 
   <meta
@@ -10,19 +15,42 @@
 
   <title>Wiltshire Family Album</title>
 
-  <link rel="stylesheet" href="style.css">
+
+  <!-- ======================================================
+       STYLESHEET
+  ======================================================= -->
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 </head>
 
 <body>
 
+  <!-- ======================================================
+       MAIN PAGE CONTAINER
+  ======================================================= -->
+
   <div class="container">
 
-    <h1>🌿 Wiltshire Family Album</h1>
+    <h1>
+      🌿 Wiltshire Family Album
+    </h1>
+
+
+    <!-- ====================================================
+         PIN LOGIN
+    ===================================================== -->
 
     <div id="login-box">
-      <p>Enter family code</p>
+
+      <p>
+        Enter family code
+      </p>
 
       <div class="pin-wrapper">
+
         <input
           id="pin"
           type="password"
@@ -36,6 +64,7 @@
         >
           👁️
         </button>
+
       </div>
 
       <button
@@ -44,13 +73,22 @@
       >
         Enter
       </button>
+
     </div>
+
+
+    <!-- ====================================================
+         FAMILY MEMBER SELECTION
+    ===================================================== -->
 
     <div
       id="name-selection"
       style="display: none;"
     >
-      <h2>Who's using the album?</h2>
+
+      <h2>
+        Who's using the album?
+      </h2>
 
       <div id="family-list"></div>
 
@@ -61,24 +99,34 @@
       >
         Continue
       </button>
+
     </div>
+
+
+    <!-- ====================================================
+         ALBUM AREA
+    ===================================================== -->
 
     <div
       id="album"
       style="display: none;"
     >
+
       <h2 id="welcome-message"></h2>
 
       <button
-  id="logout-btn"
-  type="button"
->
-  Log out
+        id="logout-btn"
+        type="button"
+      >
+        Log out
       </button>
 
+
+      <!-- Photo file input is opened by the upload button -->
+
       <input
-        type="file"
         id="photo-input"
+        type="file"
         accept="image/*"
         multiple
         hidden
@@ -91,127 +139,206 @@
         Upload Photo 📸
       </button>
 
+
+      <!-- Uploaded photos are inserted here by script.js -->
+
       <div id="gallery"></div>
+
     </div>
 
   </div>
+
+
+  <!-- ======================================================
+       TOAST NOTIFICATIONS
+  ======================================================= -->
 
   <div id="toast"></div>
+
+
+  <!-- ======================================================
+       DELETE CONFIRMATION MODAL
+  ======================================================= -->
+
   <div
-  id="delete-confirm-modal"
-  class="delete-confirm-modal"
-  hidden
->
-  <div class="delete-confirm-box">
-    <div class="delete-confirm-icon">
-      🗑️
+    id="delete-confirm-modal"
+    class="delete-confirm-modal"
+    hidden
+  >
+
+    <div class="delete-confirm-box">
+
+      <div class="delete-confirm-icon">
+        🗑️
+      </div>
+
+      <h3>
+        Delete this photo?
+      </h3>
+
+      <p>
+        This photo will be permanently removed
+        from the family album.
+      </p>
+
+      <div class="delete-confirm-actions">
+
+        <button
+          id="cancel-delete-btn"
+          type="button"
+        >
+          Keep photo
+        </button>
+
+        <button
+          id="confirm-delete-btn"
+          type="button"
+        >
+          Delete permanently
+        </button>
+
+      </div>
+
     </div>
 
-    <h3>Delete this photo?</h3>
-
-    <p>
-      This photo will be permanently removed
-      from the family album.
-    </p>
-
-    <div class="delete-confirm-actions">
-      <button
-        id="cancel-delete-btn"
-        type="button"
-      >
-        Keep photo
-      </button>
-
-      <button
-        id="confirm-delete-btn"
-        type="button"
-      >
-        Delete permanently
-      </button>
-    </div>
   </div>
-  </div>
+
+
+  <!-- ======================================================
+       PHOTO VIEWER
+  ======================================================= -->
 
   <div
     id="photo-viewer"
     class="photo-viewer"
     hidden
   >
+
+
+    <!-- Viewer controls -->
+
     <button
-  id="close-viewer"
-  type="button"
-  aria-label="Close photo"
->
-  &times;
-</button>
+      id="close-viewer"
+      type="button"
+      aria-label="Close photo"
+    >
+      &times;
+    </button>
 
-<button
-  id="delete-photo-btn"
-  type="button"
-  aria-label="Delete photo"
-  hidden
->
-  🗑️
-</button>
+    <button
+      id="delete-photo-btn"
+      type="button"
+      aria-label="Delete photo"
+      hidden
+    >
+      🗑️
+    </button>
 
-<img
-  id="viewer-image"
-  alt=""
->
+
+    <!-- Full-size photo -->
+
+    <img
+      id="viewer-image"
+      alt=""
+    >
+
+
+    <!-- Photo information and controls -->
 
     <div id="viewer-details">
 
       <div>
 
+
+        <!-- ================================================
+             PHOTO REACTIONS
+        ================================================= -->
+
         <div
           id="reaction-bar"
           class="reaction-bar"
         >
+
           <button
             type="button"
             data-reaction="love"
             aria-label="Love"
           >
-            <span class="reaction-emoji">❤️</span>
-            <span class="reaction-count">0</span>
+            <span class="reaction-emoji">
+              ❤️
+            </span>
+
+            <span class="reaction-count">
+              0
+            </span>
           </button>
+
 
           <button
             type="button"
             data-reaction="funny"
             aria-label="Funny"
           >
-            <span class="reaction-emoji">😂</span>
-            <span class="reaction-count">0</span>
+            <span class="reaction-emoji">
+              😂
+            </span>
+
+            <span class="reaction-count">
+              0
+            </span>
           </button>
+
 
           <button
             type="button"
             data-reaction="beautiful"
             aria-label="Beautiful"
           >
-            <span class="reaction-emoji">😍</span>
-            <span class="reaction-count">0</span>
+            <span class="reaction-emoji">
+              😍
+            </span>
+
+            <span class="reaction-count">
+              0
+            </span>
           </button>
+
 
           <button
             type="button"
             data-reaction="aww"
             aria-label="Aww"
           >
-            <span class="reaction-emoji">🥹</span>
-            <span class="reaction-count">0</span>
+            <span class="reaction-emoji">
+              🥹
+            </span>
+
+            <span class="reaction-count">
+              0
+            </span>
           </button>
+
 
           <button
             type="button"
             data-reaction="like"
             aria-label="Like"
           >
-            <span class="reaction-emoji">👍</span>
-            <span class="reaction-count">0</span>
+            <span class="reaction-emoji">
+              👍
+            </span>
+
+            <span class="reaction-count">
+              0
+            </span>
           </button>
+
         </div>
+
+
+        <!-- ================================================
+             CAPTION CONTROLS
+        ================================================= -->
 
         <button
           id="edit-caption-btn"
@@ -225,6 +352,7 @@
           id="caption-editor"
           hidden
         >
+
           <textarea
             id="caption-input"
             maxlength="200"
@@ -232,6 +360,7 @@
           ></textarea>
 
           <div class="caption-actions">
+
             <button
               id="cancel-caption-btn"
               type="button"
@@ -245,8 +374,15 @@
             >
               Save
             </button>
+
           </div>
+
         </div>
+
+
+        <!-- ================================================
+             PHOTO DETAILS
+        ================================================= -->
 
         <span id="viewer-uploader"></span>
 
@@ -257,12 +393,33 @@
       <span id="viewer-date"></span>
 
     </div>
+
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+
+  <!-- ======================================================
+       EXTERNAL LIBRARIES
+  ======================================================= -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"
+  ></script>
+
+
+  <!-- ======================================================
+       APP SCRIPTS
+
+       config.js must load before script.js because script.js
+       uses the settings defined inside config.js.
+  ======================================================= -->
+
   <script src="config.js"></script>
   <script src="script.js"></script>
 
 </body>
+
 </html>
