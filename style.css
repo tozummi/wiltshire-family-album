@@ -358,6 +358,12 @@ button {
   display: none;
 }
 
+.photo-viewer.showing-video
+#viewer-video {
+  max-height: calc(90vh - 150px);
+  margin-bottom: 150px;
+}
+
 /* ==========================================================
    VIEWER CLOSE AND DELETE BUTTONS
 ========================================================== */
