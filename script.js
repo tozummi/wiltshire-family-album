@@ -1148,6 +1148,15 @@ function openPhoto(
   photo.media_type ===
   "video";
 
+  document
+  .getElementById(
+    "photo-viewer"
+  )
+  .classList.toggle(
+    "showing-video",
+    isVideo
+  );
+
 if (isVideo) {
   viewerImage.hidden =
     true;
