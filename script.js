@@ -240,10 +240,6 @@ function continueToAlbum() {
 
   currentUser =
     selectedMember;
-  
-  console.log(currentUser);
-alert(`Admin: ${currentUser.is_admin}`);
-  
 
   localStorage.setItem(
     "familyAlbumUser",
