@@ -259,6 +259,12 @@ function continueToAlbum() {
   ).textContent =
     `Welcome, ${currentUser.name} 📸`;
 
+  if (currentUser.is_admin) {
+  document.getElementById(
+    "admin-btn"
+  ).style.display = "block";
+  }
+
   loadGallery();
 }
 
