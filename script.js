@@ -327,7 +327,7 @@ async function verifyAdminPin() {
   const {
     data,
     error
-  } = await supabase
+  } = await supabaseClient
     .from("settings")
     .select("value")
     .eq("key", "admin_pin")
