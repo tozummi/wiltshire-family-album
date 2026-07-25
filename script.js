@@ -152,8 +152,8 @@ async function loadFamilyMembers() {
   } = await supabaseClient
     .from("family_members")
     .select(
-      "id, name, initials, colour"
-    )
+  "id, name, initials, colour, is_admin"
+)
     .order("name");
 
   if (error) {
