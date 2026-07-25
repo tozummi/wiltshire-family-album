@@ -304,8 +304,6 @@ function enterAlbum(member) {
 }
   
 async function verifyAdminPin() {
-  console.log("verifyAdminPin called");
-alert("verifyAdminPin called");
   const enteredPin =
     document.getElementById(
       "admin-pin"
@@ -327,18 +325,13 @@ alert("verifyAdminPin called");
   }
 
   const {
-  data,
-  error
-} = await supabase
-  .from("settings")
-  .select("value")
-  .eq("key", "admin_pin")
-  .single();
-
-alert(
-  `Data: ${JSON.stringify(data)}\n` +
-  `Error: ${JSON.stringify(error)}`
-);
+    data,
+    error
+  } = await supabase
+    .from("settings")
+    .select("value")
+    .eq("key", "admin_pin")
+    .single();
 
   if (error) {
     console.error(
@@ -355,7 +348,10 @@ alert(
     return;
   }
 
-  if (enteredPin !== Stringdata.value) {
+  if (
+    enteredPin !==
+    String(data.value).trim()
+  ) {
     errorMessage.textContent =
       "Incorrect admin PIN";
 
