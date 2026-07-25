@@ -1,7 +1,8 @@
+// Force GitHub Pages redeploy 3
+
 // ============================================================
 // SUPABASE INITIALISATION
 // ============================================================
-
 
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
