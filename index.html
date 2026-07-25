@@ -102,7 +102,59 @@
 
     </div>
 
+<div
+  id="admin-pin-selection"
+  style="display: none;"
+>
+  <h2>
+    Admin verification
+  </h2>
 
+  <p>
+    Enter your private admin PIN to continue.
+  </p>
+
+  <div class="pin-input-wrapper">
+    <input
+      id="admin-pin"
+      type="password"
+      inputmode="numeric"
+      autocomplete="off"
+      placeholder="Admin PIN"
+    >
+
+    <button
+      id="toggle-admin-pin"
+      type="button"
+      aria-label="Show or hide admin PIN"
+    >
+      👁️
+    </button>
+  </div>
+
+  <p
+    id="admin-pin-error"
+    style="display: none;"
+  >
+    Incorrect admin PIN
+  </p>
+
+  <button
+    id="admin-pin-btn"
+    type="button"
+  >
+    Continue
+  </button>
+
+  <button
+    id="admin-pin-back-btn"
+    type="button"
+  >
+    Back
+  </button>
+</div>
+
+    
     <!-- ====================================================
          ALBUM AREA
     ===================================================== -->
