@@ -2748,6 +2748,73 @@ function showPreviousPhoto() {
 
 
 // ============================================================
+// ADMIN PIN EVENT LISTENERS
+// ============================================================
+
+document
+  .getElementById("admin-pin-btn")
+  .addEventListener(
+    "click",
+    verifyAdminPin
+  );
+
+document
+  .getElementById("admin-pin")
+  .addEventListener(
+    "keydown",
+    event => {
+      if (event.key === "Enter") {
+        verifyAdminPin();
+      }
+    }
+  );
+
+document
+  .getElementById(
+    "admin-pin-back-btn"
+  )
+  .addEventListener(
+    "click",
+    () => {
+      document.getElementById(
+        "admin-pin-selection"
+      ).style.display = "none";
+
+      document.getElementById(
+        "name-selection"
+      ).style.display = "block";
+
+      document.getElementById(
+        "admin-pin"
+      ).value = "";
+
+      document.getElementById(
+        "admin-pin-error"
+      ).style.display = "none";
+    }
+  );
+
+document
+  .getElementById(
+    "toggle-admin-pin"
+  )
+  .addEventListener(
+    "click",
+    () => {
+      const input =
+        document.getElementById(
+          "admin-pin"
+        );
+
+      input.type =
+        input.type === "password"
+          ? "text"
+          : "password";
+    }
+  );
+
+
+// ============================================================
 // START APP
 // ============================================================
 
