@@ -303,6 +303,79 @@ function enterAlbum(member) {
   loadGallery();
 }
   
+async function verifyAdminPin() {
+  const enteredPin =
+    document.getElementById(
+      "admin-pin"
+    ).value.trim();
+
+  const errorMessage =
+    document.getElementById(
+      "admin-pin-error"
+    );
+
+  if (!enteredPin) {
+    errorMessage.textContent =
+      "Please enter the admin PIN";
+
+    errorMessage.style.display =
+      "block";
+
+    return;
+  }
+
+  const {
+    data,
+    error
+  } = await supabase
+    .from("settings")
+    .select("value")
+    .eq("key", "admin_pin")
+    .single();
+
+  if (error) {
+    console.error(
+      "Admin PIN error:",
+      error
+    );
+
+    errorMessage.textContent =
+      "Unable to verify the admin PIN";
+
+    errorMessage.style.display =
+      "block";
+
+    return;
+  }
+
+  if (enteredPin !== data.value) {
+    errorMessage.textContent =
+      "Incorrect admin PIN";
+
+    errorMessage.style.display =
+      "block";
+
+    document.getElementById(
+      "admin-pin"
+    ).value = "";
+
+    document.getElementById(
+      "admin-pin"
+    ).focus();
+
+    return;
+  }
+
+  sessionStorage.setItem(
+    "adminVerified",
+    "true"
+  );
+
+  errorMessage.style.display =
+    "none";
+
+  enterAlbum(selectedMember);
+}
 
 function restoreSavedUser() {
   if (!savedUser) {
