@@ -234,7 +234,6 @@ async function loadFamilyMembers() {
 // ============================================================
 
 function continueToAlbum() {
-function continueToAlbum() {
   if (!selectedMember) {
     return;
   }
