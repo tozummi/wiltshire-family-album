@@ -234,12 +234,40 @@ async function loadFamilyMembers() {
 // ============================================================
 
 function continueToAlbum() {
+function continueToAlbum() {
   if (!selectedMember) {
     return;
   }
 
-  currentUser =
-    selectedMember;
+  if (selectedMember.is_admin) {
+    document.getElementById(
+      "name-selection"
+    ).style.display = "none";
+
+    document.getElementById(
+      "admin-pin-selection"
+    ).style.display = "block";
+
+    document.getElementById(
+      "admin-pin"
+    ).value = "";
+
+    document.getElementById(
+      "admin-pin-error"
+    ).style.display = "none";
+
+    document.getElementById(
+      "admin-pin"
+    ).focus();
+
+    return;
+  }
+
+  enterAlbum(selectedMember);
+}
+
+function enterAlbum(member) {
+  currentUser = member;
 
   localStorage.setItem(
     "familyAlbumUser",
@@ -251,6 +279,10 @@ function continueToAlbum() {
   ).style.display = "none";
 
   document.getElementById(
+    "admin-pin-selection"
+  ).style.display = "none";
+
+  document.getElementById(
     "album"
   ).style.display = "block";
 
@@ -259,15 +291,19 @@ function continueToAlbum() {
   ).textContent =
     `Welcome, ${currentUser.name} 📸`;
 
-  if (currentUser.is_admin) {
-  document.getElementById(
-    "admin-btn"
-  ).style.display = "block";
-  }
+  const adminButton =
+    document.getElementById(
+      "admin-btn"
+    );
+
+  adminButton.style.display =
+    currentUser.is_admin
+      ? "block"
+      : "none";
 
   loadGallery();
 }
-
+  
 
 function restoreSavedUser() {
   if (!savedUser) {
