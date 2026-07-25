@@ -304,6 +304,8 @@ function enterAlbum(member) {
 }
   
 async function verifyAdminPin() {
+  console.log("verifyAdminPin called");
+alert("verifyAdminPin called");
   const enteredPin =
     document.getElementById(
       "admin-pin"
