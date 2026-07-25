@@ -327,13 +327,18 @@ alert("verifyAdminPin called");
   }
 
   const {
-    data,
-    error
-  } = await supabase
-    .from("settings")
-    .select("value")
-    .eq("key", "admin_pin")
-    .single();
+  data,
+  error
+} = await supabase
+  .from("settings")
+  .select("value")
+  .eq("key", "admin_pin")
+  .single();
+
+alert(
+  `Data: ${JSON.stringify(data)}\n` +
+  `Error: ${JSON.stringify(error)}`
+);
 
   if (error) {
     console.error(
@@ -350,7 +355,7 @@ alert("verifyAdminPin called");
     return;
   }
 
-  if (enteredPin !== data.value) {
+  if (enteredPin !== Stringdata.value) {
     errorMessage.textContent =
       "Incorrect admin PIN";
 
