@@ -171,7 +171,22 @@ button {
     rgba(60, 47, 31, 0.05);
 }
 
-.status-dot {
+.health-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin: 0;
+
+  color: #332c24;
+
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.health-status::before {
+  content: "";
+
   width: 11px;
   height: 11px;
 
@@ -180,7 +195,7 @@ button {
   border-radius: 50%;
 }
 
-.status-good {
+.health-status.status-good::before {
   background: #4d9c67;
 
   box-shadow:
@@ -188,7 +203,7 @@ button {
     rgba(77, 156, 103, 0.13);
 }
 
-.status-neutral {
+.health-status.status-warning::before {
   background: #c59a4a;
 
   box-shadow:
@@ -196,7 +211,7 @@ button {
     rgba(197, 154, 74, 0.14);
 }
 
-.status-error {
+.health-status.status-error::before {
   background: #b45454;
 
   box-shadow:
