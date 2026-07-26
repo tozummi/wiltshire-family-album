@@ -627,6 +627,212 @@ async function loadRecentActivity() {
 }
 
 // ============================================================
+// ACTIVITY VIEW
+// ============================================================
+
+const dashboardView =
+  document.getElementById(
+    "dashboard-view"
+  );
+
+const activityView =
+  document.getElementById(
+    "activity-view"
+  );
+
+const openActivityButton =
+  document.getElementById(
+    "open-activity-btn"
+  );
+
+const activityBackButton =
+  document.getElementById(
+    "activity-back-btn"
+  );
+
+const fullActivityList =
+  document.getElementById(
+    "full-activity-list"
+  );
+
+
+function showDashboardView() {
+  if (activityView) {
+    activityView.hidden = true;
+  }
+
+  if (dashboardView) {
+    dashboardView.hidden = false;
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+async function showActivityView() {
+  if (dashboardView) {
+    dashboardView.hidden = true;
+  }
+
+  if (activityView) {
+    activityView.hidden = false;
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+  await loadFullActivity();
+}
+
+
+async function loadFullActivity() {
+  if (!fullActivityList) {
+    return;
+  }
+
+  fullActivityList.innerHTML = `
+    <p class="activity-loading">
+      Loading activity...
+    </p>
+  `;
+
+  try {
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("photos")
+      .select(`
+        id,
+        user_name,
+        media_type,
+        caption,
+        created_at
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(50);
+
+    if (error) {
+      throw error;
+    }
+
+    const activityItems =
+      data || [];
+
+    if (
+      activityItems.length === 0
+    ) {
+      fullActivityList.innerHTML = `
+        <div class="activity-empty">
+          <span class="activity-empty-icon">
+            🌿
+          </span>
+
+          <p>
+            No activity yet.
+          </p>
+        </div>
+      `;
+
+      return;
+    }
+
+    fullActivityList.innerHTML =
+      activityItems
+        .map(item => {
+          const icon =
+            getActivityIcon(
+              item.media_type
+            );
+
+          const message =
+            getActivityMessage(item);
+
+          const time =
+            formatActivityTime(
+              item.created_at
+            );
+
+          const caption =
+            item.caption
+              ? `
+                <p class="activity-caption">
+                  “${escapeActivityText(
+                    item.caption
+                  )}”
+                </p>
+              `
+              : "";
+
+          return `
+            <article class="activity-item">
+              <span class="activity-icon">
+                ${icon}
+              </span>
+
+              <div class="activity-details">
+                <p class="activity-message">
+                  ${message}
+                </p>
+
+                ${caption}
+
+                <p class="activity-time">
+                  ${time}
+                </p>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+
+  } catch (error) {
+    console.error(
+      "Could not load full activity:",
+      error
+    );
+
+    fullActivityList.innerHTML = `
+      <div class="activity-empty">
+        <span class="activity-empty-icon">
+          ⚠️
+        </span>
+
+        <p>
+          Activity could not be loaded.
+        </p>
+      </div>
+    `;
+  }
+}
+
+
+if (openActivityButton) {
+  openActivityButton.addEventListener(
+    "click",
+    showActivityView
+  );
+}
+
+
+if (activityBackButton) {
+  activityBackButton.addEventListener(
+    "click",
+    showDashboardView
+  );
+}
+
+// ============================================================
 // START ADMIN PAGE
 // ============================================================
 
