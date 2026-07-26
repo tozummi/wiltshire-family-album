@@ -234,6 +234,114 @@ button {
   font-weight: bold;
 }
 
+/* ==========================================================
+   RECENT ACTIVITY
+========================================================== */
+
+.recent-activity-list {
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border: 1px solid #e6dfd5;
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 3px 10px
+    rgba(60, 47, 31, 0.05);
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 15px 16px;
+
+  border-bottom:
+    1px solid #eee8df;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 13px;
+
+  background: #f1e8dc;
+
+  font-size: 19px;
+}
+
+.activity-details {
+  min-width: 0;
+}
+
+.activity-message {
+  margin: 0;
+
+  color: #332c24;
+
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.activity-message strong {
+  font-weight: 700;
+}
+
+.activity-time {
+  margin: 3px 0 0;
+
+  color: #8b8074;
+
+  font-size: 12px;
+}
+
+.activity-loading {
+  margin: 0;
+  padding: 22px;
+
+  color: #8b8074;
+
+  text-align: center;
+  font-size: 13px;
+}
+
+.activity-empty {
+  padding: 28px 20px;
+
+  color: #8b8074;
+
+  text-align: center;
+}
+
+.activity-empty-icon {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 24px;
+}
+
+.activity-empty p {
+  margin: 0;
+
+  font-size: 13px;
+}
 
 /* ==========================================================
    STATISTICS CARDS
