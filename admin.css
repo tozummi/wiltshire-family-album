@@ -598,3 +598,67 @@ button {
     0 0 0 4px
     rgba(189, 98, 88, 0.14);
 }
+
+/* ==========================================================
+   ADMIN VIEWS
+========================================================== */
+
+.admin-view[hidden],
+#dashboard-view[hidden] {
+  display: none;
+}
+
+.admin-view {
+  width: 100%;
+}
+
+.admin-view-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+
+  margin-bottom: 20px;
+}
+
+.admin-view-header h2 {
+  margin: 0;
+
+  color: #332c24;
+
+  font-size: 28px;
+}
+
+.admin-back-button {
+  padding: 10px 14px;
+
+  border: 1px solid #ddd3c6;
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: #5f4931;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.admin-back-button:hover {
+  background: #fffaf3;
+}
+
+.admin-back-button:active {
+  transform: scale(0.98);
+}
+
+.activity-caption {
+  margin: 4px 0 0;
+
+  color: #776b5f;
+
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.4;
+}
