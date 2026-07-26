@@ -161,34 +161,6 @@ const memberCount =
   );
 
 
-function isVideoUrl(url) {
-  if (!url) {
-    return false;
-  }
-
-  const normalisedUrl =
-    url.toLowerCase();
-
-  return (
-    normalisedUrl.includes(
-      "/video/upload/"
-    ) ||
-    normalisedUrl.endsWith(
-      ".mp4"
-    ) ||
-    normalisedUrl.endsWith(
-      ".mov"
-    ) ||
-    normalisedUrl.endsWith(
-      ".webm"
-    ) ||
-    normalisedUrl.endsWith(
-      ".m4v"
-    )
-  );
-}
-
-
 function showStatisticsError() {
   totalMediaCount.textContent =
     "—";
@@ -214,7 +186,7 @@ async function loadDashboardStatistics() {
       supabaseClient
         .from("photos")
         .select(
-          "id, image_url"
+          "id, media_type"
         ),
 
       supabaseClient
@@ -246,20 +218,18 @@ async function loadDashboardStatistics() {
     const mediaItems =
       mediaResult.data || [];
 
-    const videos =
-      mediaItems.filter(
-        item =>
-          isVideoUrl(
-            item.image_url
-          )
-      );
-
     const photos =
       mediaItems.filter(
         item =>
-          !isVideoUrl(
-            item.image_url
-          )
+          item.media_type ===
+          "photo"
+      );
+
+    const videos =
+      mediaItems.filter(
+        item =>
+          item.media_type ===
+          "video"
       );
 
 
@@ -284,6 +254,7 @@ async function loadDashboardStatistics() {
     showStatisticsError();
   }
 }
+
 // ============================================================
 // SYSTEM HEALTH
 // ============================================================
