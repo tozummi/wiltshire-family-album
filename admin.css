@@ -430,44 +430,42 @@ button {
 }
 
 .health-status {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin-top: 4px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .health-status::before {
   content: "";
-  width: 9px;
-  height: 9px;
-  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.status-good {
+.health-status.status-good::before {
+  background: #6f9464;
+}
+
+.health-status.status-warning::before {
+  background: #d3a14f;
+}
+
+.health-status.status-error::before {
+  background: #bd6258;
+}
+
+.health-status.status-good {
   color: #55704c;
 }
 
-.status-good::before {
-  background: #6f9464;
-  box-shadow:
-    0 0 0 4px
-    rgba(111, 148, 100, 0.14);
-}
-
-.status-warning {
+.health-status.status-warning {
   color: #9a6e2d;
 }
 
-.status-warning::before {
-  background: #d3a14f;
-  box-shadow:
-    0 0 0 4px
-    rgba(211, 161, 79, 0.14);
-}
-
-.status-error {
+.health-status.status-error {
   color: #984d45;
 }
 
