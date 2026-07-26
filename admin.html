@@ -40,60 +40,57 @@
     </header>
 
     <!-- System health -->
-    <section class="dashboard-section">
-      <div class="section-heading">
-        <div>
-          <p class="section-label">Overview</p>
-          <h2>System Health</h2>
-        </div>
+<section class="dashboard-section">
+  <div class="section-heading">
+    <div>
+      <p class="section-label">Overview</p>
+      <h2>System Health</h2>
+    </div>
+  </div>
+
+  <div class="system-health-grid">
+
+    <article class="health-card">
+      <div>
+        <p class="health-label">Database</p>
+
+        <p
+          id="database-status"
+          class="health-status"
+        >
+          Checking...
+        </p>
       </div>
+    </article>
 
-      <div class="system-health-grid">
+    <article class="health-card">
+      <div>
+        <p class="health-label">Album PIN</p>
 
-        <article class="health-card">
-          <span class="status-dot status-good"></span>
-
-          <div>
-            <p class="health-label">Album</p>
-            <p class="health-value">Online</p>
-          </div>
-        </article>
-
-        <article class="health-card">
-          <span class="status-dot status-good"></span>
-
-          <div>
-            <p class="health-label">Photo uploads</p>
-            <p id="photo-upload-status" class="health-value">
-              Enabled
-            </p>
-          </div>
-        </article>
-
-        <article class="health-card">
-          <span class="status-dot status-good"></span>
-
-          <div>
-            <p class="health-label">Video uploads</p>
-            <p id="video-upload-status" class="health-value">
-              Enabled
-            </p>
-          </div>
-        </article>
-
-        <article class="health-card">
-          <span class="status-dot status-neutral"></span>
-
-          <div>
-            <p class="health-label">Daily limit</p>
-            <p id="daily-limit-status" class="health-value">
-              Not loaded
-            </p>
-          </div>
-        </article>
-
+        <p
+          id="album-pin-status"
+          class="health-status"
+        >
+          Checking...
+        </p>
       </div>
-    </section>
+    </article>
+
+    <article class="health-card">
+      <div>
+        <p class="health-label">Admin PIN</p>
+
+        <p
+          id="admin-pin-status"
+          class="health-status"
+        >
+          Checking...
+        </p>
+      </div>
+    </article>
+
+  </div>
+</section>
 
     <!-- Statistics -->
     <section class="dashboard-section">
