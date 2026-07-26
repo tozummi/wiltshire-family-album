@@ -498,6 +498,10 @@ logoutButton.onclick = () => {
     "familyAlbumUser"
   );
 
+  sessionStorage.removeItem(
+  "adminVerified"
+);
+
   currentUser = null;
   selectedMember = null;
 
@@ -508,6 +512,34 @@ logoutButton.onclick = () => {
   window.location.reload();
 };
 
+// ============================================================
+// ADMIN DASHBOARD NAVIGATION
+// ============================================================
+
+const adminButton =
+  document.getElementById(
+    "admin-btn"
+  );
+
+adminButton.onclick = () => {
+  const isVerifiedAdmin =
+    currentUser?.is_admin === true &&
+    sessionStorage.getItem(
+      "adminVerified"
+    ) === "true";
+
+  if (!isVerifiedAdmin) {
+    showToast(
+      "Administrator access is required.",
+      "error"
+    );
+
+    return;
+  }
+
+  window.location.href =
+    "admin.html";
+};
 
 // ============================================================
 // PHOTO FILE HELPERS
