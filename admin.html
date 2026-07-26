@@ -176,7 +176,7 @@
           </span>
         </button>
 
-        <button class="dashboard-menu-card" type="button">
+        <button id="open-media-btn" class="dashboard-menu-card" type="button">
           <span class="menu-icon">📷</span>
 
           <span>
@@ -240,6 +240,95 @@
   >
     <p class="activity-loading">
       Loading activity...
+    </p>
+  </div>
+</section>
+
+    <!-- Media management view -->
+<section
+  id="media-view"
+  class="admin-view"
+  hidden
+>
+  <div class="admin-view-header">
+    <button
+      id="media-back-btn"
+      class="admin-back-button"
+      type="button"
+    >
+      ← Dashboard
+    </button>
+
+    <div>
+      <p class="section-label">
+        Album library
+      </p>
+
+      <h2>
+        Media
+      </h2>
+    </div>
+  </div>
+
+  <div class="media-controls">
+
+    <label
+      class="media-search"
+      for="media-search-input"
+    >
+      <span>🔍</span>
+
+      <input
+        id="media-search-input"
+        type="search"
+        placeholder="Search names or captions"
+        autocomplete="off"
+      >
+    </label>
+
+    <div class="media-filter-row">
+
+      <button
+        class="media-filter-button active"
+        type="button"
+        data-media-filter="all"
+      >
+        All
+      </button>
+
+      <button
+        class="media-filter-button"
+        type="button"
+        data-media-filter="photo"
+      >
+        Photos
+      </button>
+
+      <button
+        class="media-filter-button"
+        type="button"
+        data-media-filter="video"
+      >
+        Videos
+      </button>
+
+    </div>
+
+  </div>
+
+  <p
+    id="media-results-count"
+    class="media-results-count"
+  >
+    Loading media...
+  </p>
+
+  <div
+    id="admin-media-grid"
+    class="admin-media-grid"
+  >
+    <p class="media-loading">
+      Loading media...
     </p>
   </div>
 </section>
