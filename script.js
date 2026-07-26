@@ -411,6 +411,20 @@ function restoreSavedUser() {
     ).textContent =
       `Welcome, ${currentUser.name} 📸`;
 
+    // ------------------------------------------------------------
+// RESTORE ADMIN DASHBOARD BUTTON
+// ------------------------------------------------------------
+
+const adminButton =
+  document.getElementById(
+    "admin-btn"
+  );
+
+adminButton.style.display =
+  currentUser.is_admin
+    ? "block"
+    : "none";
+    
     loadGallery();
   } catch (error) {
     localStorage.removeItem(
