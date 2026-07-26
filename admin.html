@@ -190,6 +190,24 @@
 
   </main>
 
+  <!-- ======================================================
+       EXTERNAL LIBRARIES
+  ======================================================= -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <!-- ======================================================
+       ADMIN SCRIPTS
+
+       config.js must load before admin.js because admin.js
+       uses the Supabase settings defined inside config.js.
+  ======================================================= -->
+
+  <script src="config.js"></script>
   <script src="admin.js"></script>
+
 </body>
 </html>
