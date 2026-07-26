@@ -121,6 +121,7 @@ function initialiseAdminPage() {
   );
 
   loadDashboardStatistics();
+  loadSystemHealth();
   
 }
 
@@ -259,8 +260,142 @@ async function loadDashboardStatistics() {
 // SYSTEM HEALTH
 // ============================================================
 
-// Live system health checks will be added after the statistics.
+const databaseStatus =
+  document.getElementById(
+    "database-status"
+  );
 
+const albumPinStatus =
+  document.getElementById(
+    "album-pin-status"
+  );
+
+const adminPinStatus =
+  document.getElementById(
+    "admin-pin-status"
+  );
+
+
+function setHealthStatus(
+  element,
+  message,
+  status
+) {
+  if (!element) {
+    return;
+  }
+
+  element.textContent =
+    message;
+
+  element.classList.remove(
+    "status-good",
+    "status-warning",
+    "status-error"
+  );
+
+  element.classList.add(
+    status
+  );
+}
+
+
+async function loadSystemHealth() {
+  try {
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("settings")
+      .select("key, value")
+      .in(
+        "key",
+        [
+          "album_pin",
+          "admin_pin"
+        ]
+      );
+
+    if (error) {
+      throw error;
+    }
+
+
+    setHealthStatus(
+      databaseStatus,
+      "Connected",
+      "status-good"
+    );
+
+
+    const settings = {};
+
+    (data || []).forEach(
+      setting => {
+        settings[
+          setting.key
+        ] = setting.value;
+      }
+    );
+
+
+    const albumPinExists =
+      String(
+        settings.album_pin || ""
+      ).trim().length > 0;
+
+    const adminPinExists =
+      String(
+        settings.admin_pin || ""
+      ).trim().length > 0;
+
+
+    setHealthStatus(
+      albumPinStatus,
+      albumPinExists
+        ? "Configured"
+        : "Not configured",
+      albumPinExists
+        ? "status-good"
+        : "status-warning"
+    );
+
+
+    setHealthStatus(
+      adminPinStatus,
+      adminPinExists
+        ? "Configured"
+        : "Not configured",
+      adminPinExists
+        ? "status-good"
+        : "status-warning"
+    );
+
+  } catch (error) {
+    console.error(
+      "Could not check system health:",
+      error
+    );
+
+    setHealthStatus(
+      databaseStatus,
+      "Connection issue",
+      "status-error"
+    );
+
+    setHealthStatus(
+      albumPinStatus,
+      "Unable to check",
+      "status-error"
+    );
+
+    setHealthStatus(
+      adminPinStatus,
+      "Unable to check",
+      "status-error"
+    );
+  }
+}
 
 // ============================================================
 // START ADMIN PAGE
