@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Wiltshire Family Album — Admin</title>
+
+  <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+  <!-- Access check/loading screen -->
+  <div id="admin-loading" class="admin-loading">
+    <div class="loading-spinner"></div>
+    <p>Checking administrator access…</p>
+  </div>
+
+  <!-- Admin dashboard -->
+  <main id="admin-dashboard" class="admin-dashboard hidden">
+
+    <header class="admin-header">
+      <div>
+        <p class="admin-eyebrow">Wiltshire Family Album</p>
+        <h1>Admin Dashboard</h1>
+      </div>
+
+      <button
+        id="back-to-album-btn"
+        class="secondary-button"
+        type="button"
+      >
+        ← Back to album
+      </button>
+    </header>
+
+    <!-- System health -->
+    <section class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Overview</p>
+          <h2>System Health</h2>
+        </div>
+      </div>
+
+      <div class="system-health-grid">
+
+        <article class="health-card">
+          <span class="status-dot status-good"></span>
+
+          <div>
+            <p class="health-label">Album</p>
+            <p class="health-value">Online</p>
+          </div>
+        </article>
+
+        <article class="health-card">
+          <span class="status-dot status-good"></span>
+
+          <div>
+            <p class="health-label">Photo uploads</p>
+            <p id="photo-upload-status" class="health-value">
+              Enabled
+            </p>
+          </div>
+        </article>
+
+        <article class="health-card">
+          <span class="status-dot status-good"></span>
+
+          <div>
+            <p class="health-label">Video uploads</p>
+            <p id="video-upload-status" class="health-value">
+              Enabled
+            </p>
+          </div>
+        </article>
+
+        <article class="health-card">
+          <span class="status-dot status-neutral"></span>
+
+          <div>
+            <p class="health-label">Daily limit</p>
+            <p id="daily-limit-status" class="health-value">
+              Not loaded
+            </p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Album</p>
+          <h2>Statistics</h2>
+        </div>
+      </div>
+
+      <div class="statistics-grid">
+
+        <article class="stat-card">
+          <p class="stat-label">Total media</p>
+          <p id="total-media-count" class="stat-number">—</p>
+        </article>
+
+        <article class="stat-card">
+          <p class="stat-label">Photos</p>
+          <p id="photo-count" class="stat-number">—</p>
+        </article>
+
+        <article class="stat-card">
+          <p class="stat-label">Videos</p>
+          <p id="video-count" class="stat-number">—</p>
+        </article>
+
+        <article class="stat-card">
+          <p class="stat-label">Family members</p>
+          <p id="member-count" class="stat-number">—</p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Sectioned dashboard -->
+    <section class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Management</p>
+          <h2>Dashboard</h2>
+        </div>
+      </div>
+
+      <div class="dashboard-menu">
+
+        <button class="dashboard-menu-card" type="button">
+          <span class="menu-icon">📊</span>
+
+          <span>
+            <strong>Activity</strong>
+            <small>Statistics, uploads by user and recent activity</small>
+          </span>
+        </button>
+
+        <button class="dashboard-menu-card" type="button">
+          <span class="menu-icon">👨‍👩‍👧</span>
+
+          <span>
+            <strong>Family</strong>
+            <small>Announcements, feedback and improvement notes</small>
+          </span>
+        </button>
+
+        <button class="dashboard-menu-card" type="button">
+          <span class="menu-icon">📷</span>
+
+          <span>
+            <strong>Album</strong>
+            <small>Edit captions and manage media</small>
+          </span>
+        </button>
+
+        <button class="dashboard-menu-card" type="button">
+          <span class="menu-icon">☁️</span>
+
+          <span>
+            <strong>Storage</strong>
+            <small>Cloudinary usage and upload limits</small>
+          </span>
+        </button>
+
+        <button class="dashboard-menu-card" type="button">
+          <span class="menu-icon">⚙️</span>
+
+          <span>
+            <strong>Settings</strong>
+            <small>Album access and administrator settings</small>
+          </span>
+        </button>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>
