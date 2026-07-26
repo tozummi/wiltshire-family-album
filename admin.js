@@ -119,6 +119,9 @@ function initialiseAdminPage() {
   adminDashboard.classList.remove(
     "hidden"
   );
+
+  loadDashboardStatistics();
+  
 }
 
 
@@ -137,9 +140,150 @@ backToAlbumButton.onclick =
 // DASHBOARD STATISTICS
 // ============================================================
 
-// Live dashboard statistics will be added in the next step.
+const totalMediaCount =
+  document.getElementById(
+    "total-media-count"
+  );
+
+const photoCount =
+  document.getElementById(
+    "photo-count"
+  );
+
+const videoCount =
+  document.getElementById(
+    "video-count"
+  );
+
+const memberCount =
+  document.getElementById(
+    "member-count"
+  );
 
 
+function isVideoUrl(url) {
+  if (!url) {
+    return false;
+  }
+
+  const normalisedUrl =
+    url.toLowerCase();
+
+  return (
+    normalisedUrl.includes(
+      "/video/upload/"
+    ) ||
+    normalisedUrl.endsWith(
+      ".mp4"
+    ) ||
+    normalisedUrl.endsWith(
+      ".mov"
+    ) ||
+    normalisedUrl.endsWith(
+      ".webm"
+    ) ||
+    normalisedUrl.endsWith(
+      ".m4v"
+    )
+  );
+}
+
+
+function showStatisticsError() {
+  totalMediaCount.textContent =
+    "—";
+
+  photoCount.textContent =
+    "—";
+
+  videoCount.textContent =
+    "—";
+
+  memberCount.textContent =
+    "—";
+}
+
+
+async function loadDashboardStatistics() {
+  try {
+    const [
+      mediaResult,
+      memberResult
+    ] = await Promise.all([
+
+      supabaseClient
+        .from("photos")
+        .select(
+          "id, image_url"
+        ),
+
+      supabaseClient
+        .from("family_members")
+        .select(
+          "id",
+          {
+            count: "exact",
+            head: true
+          }
+        )
+        .eq(
+          "active",
+          true
+        )
+
+    ]);
+
+
+    if (mediaResult.error) {
+      throw mediaResult.error;
+    }
+
+    if (memberResult.error) {
+      throw memberResult.error;
+    }
+
+
+    const mediaItems =
+      mediaResult.data || [];
+
+    const videos =
+      mediaItems.filter(
+        item =>
+          isVideoUrl(
+            item.image_url
+          )
+      );
+
+    const photos =
+      mediaItems.filter(
+        item =>
+          !isVideoUrl(
+            item.image_url
+          )
+      );
+
+
+    totalMediaCount.textContent =
+      mediaItems.length;
+
+    photoCount.textContent =
+      photos.length;
+
+    videoCount.textContent =
+      videos.length;
+
+    memberCount.textContent =
+      memberResult.count ?? 0;
+
+  } catch (error) {
+    console.error(
+      "Could not load dashboard statistics:",
+      error
+    );
+
+    showStatisticsError();
+  }
+}
 // ============================================================
 // SYSTEM HEALTH
 // ============================================================
