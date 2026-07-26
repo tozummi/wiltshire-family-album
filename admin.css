@@ -2,6 +2,24 @@
    PAGE RESET AND BASE STYLES
 ========================================================== */
 
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+
+  background: #faf8f3;
+  color: #332c24;
+
+  font-family: Georgia, serif;
+}
+
+button {
+  font-family: inherit;
+}
+
 
 /* ==========================================================
    ACCESS CHECK AND LOADING SCREEN
@@ -11,41 +29,402 @@
   display: none;
 }
 
+.admin-loading {
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+
+  padding: 24px;
+
+  text-align: center;
+}
+
+.admin-loading p {
+  margin: 0;
+
+  color: #6f6253;
+
+  font-size: 15px;
+}
+
+.loading-spinner {
+  width: 42px;
+  height: 42px;
+
+  border: 4px solid #e5ded3;
+  border-top-color: #8b6f47;
+  border-radius: 50%;
+
+  animation: adminSpin 0.8s linear infinite;
+}
+
+
 /* ==========================================================
    ADMIN PAGE LAYOUT
 ========================================================== */
+
+.admin-dashboard {
+  width: 100%;
+  max-width: 760px;
+
+  margin: 0 auto;
+  padding: 24px 18px 48px;
+}
 
 
 /* ==========================================================
    ADMIN HEADER
 ========================================================== */
 
+.admin-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+
+  margin-bottom: 30px;
+}
+
+.admin-eyebrow {
+  margin: 0 0 5px;
+
+  color: #8b6f47;
+
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.admin-header h1 {
+  margin: 0;
+
+  font-size: 30px;
+  font-weight: normal;
+  line-height: 1.15;
+}
+
 
 /* ==========================================================
    DASHBOARD SECTIONS
 ========================================================== */
+
+.dashboard-section {
+  margin-bottom: 30px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 14px;
+}
+
+.section-label {
+  margin: 0 0 4px;
+
+  color: #9b8261;
+
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section-heading h2 {
+  margin: 0;
+
+  font-size: 22px;
+  font-weight: normal;
+}
 
 
 /* ==========================================================
    SYSTEM HEALTH CARDS
 ========================================================== */
 
+.system-health-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.health-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 16px;
+
+  border: 1px solid #e6dfd5;
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 3px 10px
+    rgba(60, 47, 31, 0.05);
+}
+
+.status-dot {
+  width: 11px;
+  height: 11px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+}
+
+.status-good {
+  background: #4d9c67;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(77, 156, 103, 0.13);
+}
+
+.status-neutral {
+  background: #c59a4a;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(197, 154, 74, 0.14);
+}
+
+.status-error {
+  background: #b45454;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(180, 84, 84, 0.14);
+}
+
+.health-label {
+  margin: 0 0 3px;
+
+  color: #776b5f;
+
+  font-size: 13px;
+}
+
+.health-value {
+  margin: 0;
+
+  font-size: 16px;
+  font-weight: bold;
+}
+
 
 /* ==========================================================
    STATISTICS CARDS
 ========================================================== */
+
+.statistics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.stat-card {
+  min-height: 112px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  padding: 16px;
+
+  border: 1px solid #e6dfd5;
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 3px 10px
+    rgba(60, 47, 31, 0.05);
+}
+
+.stat-label {
+  margin: 0;
+
+  color: #776b5f;
+
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.stat-number {
+  margin: 12px 0 0;
+
+  color: #5f4931;
+
+  font-size: 30px;
+  line-height: 1;
+}
 
 
 /* ==========================================================
    DASHBOARD MENU
 ========================================================== */
 
+.dashboard-menu {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.dashboard-menu-card {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 17px;
+
+  border: 1px solid #e6dfd5;
+  border-radius: 17px;
+
+  background: #ffffff;
+  color: #332c24;
+
+  text-align: left;
+
+  box-shadow:
+    0 3px 10px
+    rgba(60, 47, 31, 0.05);
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+
+  cursor: pointer;
+}
+
+.dashboard-menu-card:active {
+  transform: scale(0.985);
+}
+
+.dashboard-menu-card:hover {
+  border-color: #c9b89f;
+
+  background: #fffdf9;
+}
+
+.dashboard-menu-card > span:last-child {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menu-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 14px;
+
+  background: #f1e8dc;
+
+  font-size: 22px;
+}
+
+.dashboard-menu-card strong {
+  font-size: 16px;
+}
+
+.dashboard-menu-card small {
+  color: #776b5f;
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 
 /* ==========================================================
    BUTTONS
 ========================================================== */
 
+.secondary-button {
+  padding: 10px 14px;
+
+  border: 1px solid #d8d1c7;
+  border-radius: 11px;
+
+  background: transparent;
+  color: #62574c;
+
+  font-size: 13px;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  background: #f1ece5;
+}
+
+.secondary-button:active {
+  transform: scale(0.97);
+}
+
+
+/* ==========================================================
+   ANIMATIONS
+========================================================== */
+
+@keyframes adminSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 
 /* ==========================================================
    RESPONSIVE LAYOUT
 ========================================================== */
+
+@media (min-width: 560px) {
+  .admin-dashboard {
+    padding:
+      34px 28px
+      60px;
+  }
+
+  .admin-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .system-health-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .statistics-grid {
+    grid-template-columns:
+      repeat(4, 1fr);
+  }
+
+  .dashboard-menu {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+}
