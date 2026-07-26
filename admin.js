@@ -122,6 +122,7 @@ function initialiseAdminPage() {
 
   loadDashboardStatistics();
   loadSystemHealth();
+  loadRecentActivity();
   
 }
 
@@ -394,6 +395,234 @@ async function loadSystemHealth() {
       "Unable to check",
       "status-error"
     );
+  }
+}
+
+// ============================================================
+// RECENT ACTIVITY
+// ============================================================
+
+const recentActivityList =
+  document.getElementById(
+    "recent-activity-list"
+  );
+
+
+function escapeActivityText(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+function formatActivityTime(dateValue) {
+  const uploadDate =
+    new Date(dateValue);
+
+  const now =
+    new Date();
+
+  const differenceMilliseconds =
+    now - uploadDate;
+
+  const differenceMinutes =
+    Math.floor(
+      differenceMilliseconds /
+      60000
+    );
+
+  const differenceHours =
+    Math.floor(
+      differenceMinutes /
+      60
+    );
+
+  const differenceDays =
+    Math.floor(
+      differenceHours /
+      24
+    );
+
+
+  if (differenceMinutes < 1) {
+    return "Just now";
+  }
+
+  if (differenceMinutes < 60) {
+    return `${differenceMinutes} min ago`;
+  }
+
+  if (differenceHours < 24) {
+    return differenceHours === 1
+      ? "1 hour ago"
+      : `${differenceHours} hours ago`;
+  }
+
+  if (differenceDays === 1) {
+    return "Yesterday";
+  }
+
+  if (differenceDays < 7) {
+    return `${differenceDays} days ago`;
+  }
+
+
+  return uploadDate.toLocaleDateString(
+    "en-GB",
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }
+  );
+}
+
+
+function getActivityIcon(mediaType) {
+  return mediaType === "video"
+    ? "🎥"
+    : "📸";
+}
+
+
+function getActivityMessage(item) {
+  const uploaderName =
+    escapeActivityText(
+      item.user_name ||
+      "A family member"
+    );
+
+  const mediaLabel =
+    item.media_type === "video"
+      ? "a video"
+      : "a photo";
+
+  return `
+    <strong>${uploaderName}</strong>
+    uploaded ${mediaLabel}
+  `;
+}
+
+
+function showActivityError() {
+  if (!recentActivityList) {
+    return;
+  }
+
+  recentActivityList.innerHTML = `
+    <div class="activity-empty">
+      <span class="activity-empty-icon">
+        ⚠️
+      </span>
+
+      <p>
+        Recent activity could not be loaded.
+      </p>
+    </div>
+  `;
+}
+
+
+async function loadRecentActivity() {
+  if (!recentActivityList) {
+    return;
+  }
+
+  try {
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("photos")
+      .select(`
+        id,
+        user_name,
+        media_type,
+        created_at
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(5);
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const activityItems =
+      data || [];
+
+
+    if (
+      activityItems.length === 0
+    ) {
+      recentActivityList.innerHTML = `
+        <div class="activity-empty">
+          <span class="activity-empty-icon">
+            🌿
+          </span>
+
+          <p>
+            No recent activity yet.
+          </p>
+        </div>
+      `;
+
+      return;
+    }
+
+
+    recentActivityList.innerHTML =
+      activityItems
+        .map(item => {
+          const icon =
+            getActivityIcon(
+              item.media_type
+            );
+
+          const message =
+            getActivityMessage(item);
+
+          const time =
+            formatActivityTime(
+              item.created_at
+            );
+
+          return `
+            <article class="activity-item">
+              <span class="activity-icon">
+                ${icon}
+              </span>
+
+              <div class="activity-details">
+                <p class="activity-message">
+                  ${message}
+                </p>
+
+                <p class="activity-time">
+                  ${time}
+                </p>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+
+  } catch (error) {
+    console.error(
+      "Could not load recent activity:",
+      error
+    );
+
+    showActivityError();
   }
 }
 
