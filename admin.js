@@ -833,6 +833,88 @@ if (activityBackButton) {
 }
 
 // ============================================================
+// MEDIA VIEW
+// ============================================================
+
+const mediaView =
+  document.getElementById(
+    "media-view"
+  );
+
+const openMediaButton =
+  document.getElementById(
+    "open-media-btn"
+  );
+
+const mediaBackButton =
+  document.getElementById(
+    "media-back-btn"
+  );
+
+
+async function showMediaView() {
+  if (dashboardView) {
+    dashboardView.hidden = true;
+  }
+
+  if (activityView) {
+    activityView.hidden = true;
+  }
+
+  if (mediaView) {
+    mediaView.hidden = false;
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+  if (
+    typeof loadAdminMedia ===
+    "function"
+  ) {
+    await loadAdminMedia();
+  }
+}
+
+
+function returnToDashboardFromMedia() {
+  if (mediaView) {
+    mediaView.hidden = true;
+  }
+
+  if (activityView) {
+    activityView.hidden = true;
+  }
+
+  if (dashboardView) {
+    dashboardView.hidden = false;
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+if (openMediaButton) {
+  openMediaButton.addEventListener(
+    "click",
+    showMediaView
+  );
+}
+
+
+if (mediaBackButton) {
+  mediaBackButton.addEventListener(
+    "click",
+    returnToDashboardFromMedia
+  );
+}
+
+// ============================================================
 // START ADMIN PAGE
 // ============================================================
 
