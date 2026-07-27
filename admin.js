@@ -124,6 +124,12 @@ function initialiseAdminPage() {
   loadSystemHealth();
   loadRecentActivity();
   
+  history.replaceState(
+  {
+    adminView: "dashboard-view"
+  },
+  ""
+);
 }
 
 
