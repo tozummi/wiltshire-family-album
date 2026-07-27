@@ -677,9 +677,11 @@ function showAdminView(
 ) {
   hideAllAdminViews();
 
-  if (view) {
-    view.hidden = false;
+  if (!view) {
+    return;
   }
+
+  view.hidden = false;
 
   window.scrollTo({
     top: 0,
@@ -689,8 +691,7 @@ function showAdminView(
   if (addToHistory) {
     history.pushState(
       {
-        adminView: view?.id ||
-          "dashboard-view"
+        adminView: view.id
       },
       ""
     );
@@ -1535,7 +1536,6 @@ function openMediaViewer(mediaId) {
   
 }
 
-
 function hideMediaViewerOnly() {
   if (!adminMediaViewer) {
     return;
@@ -1557,6 +1557,9 @@ function hideMediaViewerOnly() {
   );
 }
 
+function closeMediaViewer() {
+  history.back();
+}
 
 function showPreviousMedia() {
   if (currentViewerIndex <= 0) {
@@ -1688,6 +1691,42 @@ window.addEventListener(
 
     showAdminView(
       view || dashboardView,
+      false
+    );
+  }
+);
+
+// ============================================================
+// MOBILE BACK-BUTTON NAVIGATION
+// ============================================================
+
+window.addEventListener(
+  "popstate",
+  event => {
+    /*
+      If the media viewer is open,
+      Back should close it first.
+    */
+    if (
+      adminMediaViewer &&
+      !adminMediaViewer.hidden
+    ) {
+      hideMediaViewerOnly();
+      return;
+    }
+
+    const viewId =
+      event.state?.adminView ||
+      "dashboard-view";
+
+    const requestedView =
+      document.getElementById(
+        viewId
+      );
+
+    showAdminView(
+      requestedView ||
+      dashboardView,
       false
     );
   }
