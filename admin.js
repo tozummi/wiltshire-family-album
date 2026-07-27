@@ -1868,6 +1868,18 @@ document.addEventListener(
 window.addEventListener(
   "popstate",
   event => {
+    if (mediaSelectionMode) {
+  exitMediaSelectionMode();
+
+  history.pushState(
+    {
+      adminView: "media-view"
+    },
+    ""
+  );
+
+  return;
+    }
     /*
       If the media viewer is open,
       Back should close it first.
