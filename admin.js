@@ -660,17 +660,14 @@ const fullActivityList =
 // ============================================================
 
 function hideAllAdminViews() {
-  if (dashboardView) {
-    dashboardView.hidden = true;
-  }
+  const adminViews =
+    document.querySelectorAll(
+      "#dashboard-view, .admin-view"
+    );
 
-  if (activityView) {
-    activityView.hidden = true;
-  }
-
-  if (mediaView) {
-    mediaView.hidden = true;
-  }
+  adminViews.forEach(view => {
+    view.hidden = true;
+  });
 }
 
 
