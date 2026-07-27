@@ -1291,6 +1291,361 @@ mediaFilterButtons.forEach(
   }
 );
 
+// ============================================================
+// MEDIA VIEWER
+// ============================================================
+
+const adminMediaViewer =
+  document.getElementById(
+    "admin-media-viewer"
+  );
+
+const adminMediaViewerPreview =
+  document.getElementById(
+    "admin-media-viewer-preview"
+  );
+
+const adminMediaViewerDetails =
+  document.getElementById(
+    "admin-media-viewer-details"
+  );
+
+const closeMediaViewerButton =
+  document.getElementById(
+    "close-media-viewer-btn"
+  );
+
+const previousMediaButton =
+  document.getElementById(
+    "previous-media-btn"
+  );
+
+const nextMediaButton =
+  document.getElementById(
+    "next-media-btn"
+  );
+
+
+let currentViewerItems = [];
+let currentViewerIndex = 0;
+
+
+function getViewerMedia(item) {
+  const uploaderName =
+    escapeActivityText(
+      item.user_name ||
+      "a family member"
+    );
+
+
+  if (
+    item.media_type === "video" &&
+    item.video_url
+  ) {
+    return `
+      <video
+        src="${escapeActivityText(
+          item.video_url
+        )}"
+        controls
+        playsinline
+        preload="metadata"
+        aria-label="Video uploaded by ${uploaderName}"
+      ></video>
+    `;
+  }
+
+
+  if (item.image_url) {
+    return `
+      <img
+        src="${escapeActivityText(
+          item.image_url
+        )}"
+        alt="Photo uploaded by ${uploaderName}"
+      >
+    `;
+  }
+
+
+  return `
+    <div class="admin-viewer-placeholder">
+      <span>
+        ${
+          item.media_type === "video"
+            ? "🎥"
+            : "🖼️"
+        }
+      </span>
+
+      <p>
+        Media unavailable
+      </p>
+    </div>
+  `;
+}
+
+
+function renderMediaViewer() {
+  const item =
+    currentViewerItems[
+      currentViewerIndex
+    ];
+
+
+  if (
+    !item ||
+    !adminMediaViewerPreview ||
+    !adminMediaViewerDetails
+  ) {
+    return;
+  }
+
+
+  adminMediaViewerPreview.innerHTML =
+    getViewerMedia(item);
+
+
+  const uploaderName =
+    escapeActivityText(
+      item.user_name ||
+      "Unknown member"
+    );
+
+  const uploadDate =
+    formatMediaUploadDate(
+      item.created_at
+    );
+
+  const mediaType =
+    item.media_type === "video"
+      ? "Video"
+      : "Photo";
+
+  const caption =
+    item.caption
+      ? `
+        <div class="admin-viewer-detail-block">
+          <span>Caption</span>
+
+          <p>
+            ${escapeActivityText(
+              item.caption
+            )}
+          </p>
+        </div>
+      `
+      : "";
+
+
+  adminMediaViewerDetails.innerHTML = `
+    <div class="admin-viewer-detail-block">
+      <span>Uploaded by</span>
+
+      <p>
+        ${uploaderName}
+      </p>
+    </div>
+
+    <div class="admin-viewer-detail-row">
+      <div class="admin-viewer-detail-block">
+        <span>Type</span>
+
+        <p>
+          ${mediaType}
+        </p>
+      </div>
+
+      <div class="admin-viewer-detail-block">
+        <span>Uploaded</span>
+
+        <p>
+          ${uploadDate}
+        </p>
+      </div>
+    </div>
+
+    ${caption}
+  `;
+
+
+  if (previousMediaButton) {
+    previousMediaButton.disabled =
+      currentViewerIndex === 0;
+  }
+
+  if (nextMediaButton) {
+    nextMediaButton.disabled =
+      currentViewerIndex ===
+      currentViewerItems.length - 1;
+  }
+}
+
+
+function openMediaViewer(mediaId) {
+  currentViewerItems =
+    getFilteredAdminMedia();
+
+
+  currentViewerIndex =
+    currentViewerItems.findIndex(
+      item =>
+        String(item.id) ===
+        String(mediaId)
+    );
+
+
+  if (currentViewerIndex < 0) {
+    return;
+  }
+
+
+  renderMediaViewer();
+
+
+  if (adminMediaViewer) {
+    adminMediaViewer.hidden = false;
+  }
+
+
+  document.body.classList.add(
+    "admin-viewer-open"
+  );
+}
+
+
+function closeMediaViewer() {
+  if (!adminMediaViewer) {
+    return;
+  }
+
+
+  const video =
+    adminMediaViewer.querySelector(
+      "video"
+    );
+
+  if (video) {
+    video.pause();
+  }
+
+
+  adminMediaViewer.hidden = true;
+
+  document.body.classList.remove(
+    "admin-viewer-open"
+  );
+}
+
+
+function showPreviousMedia() {
+  if (currentViewerIndex <= 0) {
+    return;
+  }
+
+  currentViewerIndex -= 1;
+
+  renderMediaViewer();
+}
+
+
+function showNextMedia() {
+  if (
+    currentViewerIndex >=
+    currentViewerItems.length - 1
+  ) {
+    return;
+  }
+
+  currentViewerIndex += 1;
+
+  renderMediaViewer();
+}
+
+
+if (adminMediaGrid) {
+  adminMediaGrid.addEventListener(
+    "click",
+    event => {
+      const mediaCard =
+        event.target.closest(
+          ".admin-media-card"
+        );
+
+
+      if (!mediaCard) {
+        return;
+      }
+
+
+      openMediaViewer(
+        mediaCard.dataset.mediaId
+      );
+    }
+  );
+}
+
+
+if (closeMediaViewerButton) {
+  closeMediaViewerButton.addEventListener(
+    "click",
+    closeMediaViewer
+  );
+}
+
+
+document
+  .querySelectorAll(
+    "[data-close-media-viewer]"
+  )
+  .forEach(element => {
+    element.addEventListener(
+      "click",
+      closeMediaViewer
+    );
+  });
+
+
+if (previousMediaButton) {
+  previousMediaButton.addEventListener(
+    "click",
+    showPreviousMedia
+  );
+}
+
+
+if (nextMediaButton) {
+  nextMediaButton.addEventListener(
+    "click",
+    showNextMedia
+  );
+}
+
+
+document.addEventListener(
+  "keydown",
+  event => {
+    if (
+      !adminMediaViewer ||
+      adminMediaViewer.hidden
+    ) {
+      return;
+    }
+
+
+    if (event.key === "Escape") {
+      closeMediaViewer();
+    }
+
+    if (event.key === "ArrowLeft") {
+      showPreviousMedia();
+    }
+
+    if (event.key === "ArrowRight") {
+      showNextMedia();
+    }
+  }
+);
 
 // ============================================================
 // START ADMIN PAGE
