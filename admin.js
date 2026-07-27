@@ -1104,6 +1104,28 @@ function renderAdminMedia() {
       </div>
     `;
 
+    const mediaId =
+  String(item.id);
+
+const isSelected =
+  selectedMediaIds.has(
+    mediaId
+  );
+
+const selectionClass =
+  isSelected
+    ? " selected"
+    : "";
+
+const selectionIndicator =
+  mediaSelectionMode
+    ? `
+      <span class="admin-media-selection-indicator">
+        ${isSelected ? "✓" : ""}
+      </span>
+    `
+    : "";
+
     return;
   }
 
@@ -1153,13 +1175,15 @@ function renderAdminMedia() {
 
         return `
           <article
-            class="admin-media-card"
+          class="admin-media-card${selectionClass}"
             data-media-id="${escapeActivityText(
               item.id
             )}"
           >
             <div class="admin-media-preview">
               ${preview}
+
+              ${selectionIndicator}
 
               <span class="admin-media-type">
                 ${typeIcon}
@@ -1758,14 +1782,23 @@ if (adminMediaGrid) {
           ".admin-media-card"
         );
 
-
       if (!mediaCard) {
         return;
       }
 
+      const mediaId =
+        mediaCard.dataset.mediaId;
+
+      if (mediaSelectionMode) {
+        toggleMediaSelection(
+          mediaId
+        );
+
+        return;
+      }
 
       openMediaViewer(
-        mediaCard.dataset.mediaId
+        mediaId
       );
     }
   );
