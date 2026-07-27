@@ -898,6 +898,401 @@ if (mediaBackButton) {
 }
 
 // ============================================================
+// MEDIA MANAGEMENT
+// ============================================================
+
+const adminMediaGrid =
+  document.getElementById(
+    "admin-media-grid"
+  );
+
+const mediaSearchInput =
+  document.getElementById(
+    "media-search-input"
+  );
+
+const mediaResultsCount =
+  document.getElementById(
+    "media-results-count"
+  );
+
+const mediaFilterButtons =
+  document.querySelectorAll(
+    "[data-media-filter]"
+  );
+
+
+let adminMediaItems = [];
+let activeMediaFilter = "all";
+
+
+function getAdminMediaPreview(item) {
+  const uploaderName =
+    escapeActivityText(
+      item.user_name ||
+      "a family member"
+    );
+
+
+  if (
+    item.media_type === "video"
+  ) {
+    if (item.video_thumbnail_url) {
+      return `
+        <img
+          src="${escapeActivityText(
+            item.video_thumbnail_url
+          )}"
+          alt="Video uploaded by ${uploaderName}"
+          loading="lazy"
+        >
+      `;
+    }
+
+    return `
+      <div class="admin-media-placeholder">
+        <span>🎥</span>
+        <p>Video</p>
+      </div>
+    `;
+  }
+
+
+  if (item.image_url) {
+    return `
+      <img
+        src="${escapeActivityText(
+          item.image_url
+        )}"
+        alt="Photo uploaded by ${uploaderName}"
+        loading="lazy"
+      >
+    `;
+  }
+
+
+  return `
+    <div class="admin-media-placeholder">
+      <span>🖼️</span>
+      <p>Preview unavailable</p>
+    </div>
+  `;
+}
+
+
+function formatMediaUploadDate(
+  dateValue
+) {
+  const uploadDate =
+    new Date(dateValue);
+
+
+  if (
+    Number.isNaN(
+      uploadDate.getTime()
+    )
+  ) {
+    return "Unknown date";
+  }
+
+
+  return uploadDate.toLocaleDateString(
+    "en-GB",
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }
+  );
+}
+
+
+function getFilteredAdminMedia() {
+  const searchTerm =
+    String(
+      mediaSearchInput?.value ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  return adminMediaItems.filter(
+    item => {
+      const matchesType =
+        activeMediaFilter === "all" ||
+        item.media_type ===
+          activeMediaFilter;
+
+
+      const searchableText = [
+        item.user_name,
+        item.caption,
+        item.original_filename
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+
+      const matchesSearch =
+        searchTerm.length === 0 ||
+        searchableText.includes(
+          searchTerm
+        );
+
+
+      return (
+        matchesType &&
+        matchesSearch
+      );
+    }
+  );
+}
+
+
+function renderAdminMedia() {
+  if (!adminMediaGrid) {
+    return;
+  }
+
+
+  const filteredItems =
+    getFilteredAdminMedia();
+
+
+  if (mediaResultsCount) {
+    mediaResultsCount.textContent =
+      `${filteredItems.length} ${
+        filteredItems.length === 1
+          ? "item"
+          : "items"
+      }`;
+  }
+
+
+  if (
+    filteredItems.length === 0
+  ) {
+    adminMediaGrid.innerHTML = `
+      <div class="media-empty">
+        <span>🌿</span>
+
+        <p>
+          No matching media found.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  adminMediaGrid.innerHTML =
+    filteredItems
+      .map(item => {
+        const preview =
+          getAdminMediaPreview(item);
+
+        const uploaderName =
+          escapeActivityText(
+            item.user_name ||
+            "Unknown member"
+          );
+
+        const typeIsVideo =
+          item.media_type ===
+          "video";
+
+        const typeIcon =
+          typeIsVideo
+            ? "🎥"
+            : "📸";
+
+        const typeLabel =
+          typeIsVideo
+            ? "Video"
+            : "Photo";
+
+        const uploadDate =
+          formatMediaUploadDate(
+            item.created_at
+          );
+
+        const caption =
+          item.caption
+            ? `
+              <p class="admin-media-caption">
+                ${escapeActivityText(
+                  item.caption
+                )}
+              </p>
+            `
+            : "";
+
+
+        return `
+          <article
+            class="admin-media-card"
+            data-media-id="${escapeActivityText(
+              item.id
+            )}"
+          >
+            <div class="admin-media-preview">
+              ${preview}
+
+              <span class="admin-media-type">
+                ${typeIcon}
+                ${typeLabel}
+              </span>
+            </div>
+
+            <div class="admin-media-information">
+              <p class="admin-media-uploader">
+                ${uploaderName}
+              </p>
+
+              ${caption}
+
+              <p class="admin-media-date">
+                ${uploadDate}
+              </p>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+}
+
+
+async function loadAdminMedia() {
+  if (!adminMediaGrid) {
+    return;
+  }
+
+
+  adminMediaGrid.innerHTML = `
+    <p class="media-loading">
+      Loading media...
+    </p>
+  `;
+
+
+  if (mediaResultsCount) {
+    mediaResultsCount.textContent =
+      "Loading media...";
+  }
+
+
+  try {
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("photos")
+      .select(`
+        id,
+        image_url,
+        video_url,
+        video_thumbnail_url,
+        media_type,
+        user_name,
+        caption,
+        original_filename,
+        status,
+        created_at
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    adminMediaItems =
+      data || [];
+
+
+    renderAdminMedia();
+
+  } catch (error) {
+    console.error(
+      "Could not load admin media:",
+      error
+    );
+
+
+    if (mediaResultsCount) {
+      mediaResultsCount.textContent =
+        "Unable to load media";
+    }
+
+
+    adminMediaGrid.innerHTML = `
+      <div class="media-empty">
+        <span>⚠️</span>
+
+        <p>
+          Media could not be loaded.
+        </p>
+      </div>
+    `;
+  }
+}
+
+
+function changeMediaFilter(
+  event
+) {
+  const selectedButton =
+    event.currentTarget;
+
+
+  activeMediaFilter =
+    selectedButton.dataset
+      .mediaFilter ||
+    "all";
+
+
+  mediaFilterButtons.forEach(
+    button => {
+      button.classList.toggle(
+        "active",
+        button === selectedButton
+      );
+    }
+  );
+
+
+  renderAdminMedia();
+}
+
+
+if (mediaSearchInput) {
+  mediaSearchInput.addEventListener(
+    "input",
+    renderAdminMedia
+  );
+}
+
+
+mediaFilterButtons.forEach(
+  button => {
+    button.addEventListener(
+      "click",
+      changeMediaFilter
+    );
+  }
+);
+
+
+// ============================================================
 // START ADMIN PAGE
 // ============================================================
 
