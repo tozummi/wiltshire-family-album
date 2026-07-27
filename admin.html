@@ -333,6 +333,68 @@
   </div>
 </section>
 
+    <!-- Media viewer -->
+<div
+  id="admin-media-viewer"
+  class="admin-media-viewer"
+  hidden
+>
+  <div
+    class="admin-media-viewer-backdrop"
+    data-close-media-viewer
+  ></div>
+
+  <div
+    class="admin-media-viewer-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="admin-media-viewer-title"
+  >
+    <div class="admin-media-viewer-header">
+      <h2 id="admin-media-viewer-title">
+        Media details
+      </h2>
+
+      <button
+        id="close-media-viewer-btn"
+        class="admin-media-viewer-close"
+        type="button"
+        aria-label="Close media viewer"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div
+      id="admin-media-viewer-preview"
+      class="admin-media-viewer-preview"
+    ></div>
+
+    <div
+      id="admin-media-viewer-details"
+      class="admin-media-viewer-details"
+    ></div>
+
+    <div class="admin-media-viewer-navigation">
+      <button
+        id="previous-media-btn"
+        class="admin-viewer-nav-button"
+        type="button"
+      >
+        ← Previous
+      </button>
+
+      <button
+        id="next-media-btn"
+        class="admin-viewer-nav-button"
+        type="button"
+      >
+        Next →
+      </button>
+    </div>
+  </div>
+</div>
+
   </main>
 
   <!-- ======================================================
