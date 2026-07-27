@@ -1076,10 +1076,8 @@ function renderAdminMedia() {
     return;
   }
 
-
   const filteredItems =
     getFilteredAdminMedia();
-
 
   if (mediaResultsCount) {
     mediaResultsCount.textContent =
@@ -1090,10 +1088,7 @@ function renderAdminMedia() {
       }`;
   }
 
-
-  if (
-    filteredItems.length === 0
-  ) {
+  if (filteredItems.length === 0) {
     adminMediaGrid.innerHTML = `
       <div class="media-empty">
         <span>🌿</span>
@@ -1104,35 +1099,34 @@ function renderAdminMedia() {
       </div>
     `;
 
-    const mediaId =
-  String(item.id);
-
-const isSelected =
-  selectedMediaIds.has(
-    mediaId
-  );
-
-const selectionClass =
-  isSelected
-    ? " selected"
-    : "";
-
-const selectionIndicator =
-  mediaSelectionMode
-    ? `
-      <span class="admin-media-selection-indicator">
-        ${isSelected ? "✓" : ""}
-      </span>
-    `
-    : "";
-
     return;
   }
-
 
   adminMediaGrid.innerHTML =
     filteredItems
       .map(item => {
+        const mediaId =
+          String(item.id);
+
+        const isSelected =
+          selectedMediaIds.has(
+            mediaId
+          );
+
+        const selectionClass =
+          isSelected
+            ? " selected"
+            : "";
+
+        const selectionIndicator =
+          mediaSelectionMode
+            ? `
+              <span class="admin-media-selection-indicator">
+                ${isSelected ? "✓" : ""}
+              </span>
+            `
+            : "";
+
         const preview =
           getAdminMediaPreview(item);
 
@@ -1172,10 +1166,9 @@ const selectionIndicator =
             `
             : "";
 
-
         return `
           <article
-          class="admin-media-card${selectionClass}"
+            class="admin-media-card${selectionClass}"
             data-media-id="${escapeActivityText(
               item.id
             )}"
@@ -1207,8 +1200,9 @@ const selectionIndicator =
       })
       .join("");
 }
+  
 
-
+  
 async function loadAdminMedia() {
   if (!adminMediaGrid) {
     return;
@@ -1866,31 +1860,6 @@ document.addEventListener(
   }
 );
 
-window.addEventListener(
-  "popstate",
-  event => {
-    const viewId =
-      event.state?.adminView;
-
-    if (
-      adminMediaViewer &&
-      !adminMediaViewer.hidden
-    ) {
-      hideMediaViewerOnly();
-      return;
-    }
-
-    const view =
-      document.getElementById(
-        viewId || "dashboard-view"
-      );
-
-    showAdminView(
-      view || dashboardView,
-      false
-    );
-  }
-);
 
 // ============================================================
 // MOBILE BACK-BUTTON NAVIGATION
