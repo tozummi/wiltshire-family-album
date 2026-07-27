@@ -1312,6 +1312,163 @@ mediaFilterButtons.forEach(
 );
 
 // ============================================================
+// MEDIA SELECTION
+// ============================================================
+
+const startMediaSelectionButton =
+  document.getElementById(
+    "start-media-selection-btn"
+  );
+
+const activeMediaSelectionControls =
+  document.getElementById(
+    "active-media-selection-controls"
+  );
+
+const selectedMediaCount =
+  document.getElementById(
+    "selected-media-count"
+  );
+
+const selectAllMediaButton =
+  document.getElementById(
+    "select-all-media-btn"
+  );
+
+const cancelMediaSelectionButton =
+  document.getElementById(
+    "cancel-media-selection-btn"
+  );
+
+
+let mediaSelectionMode = false;
+
+const selectedMediaIds =
+  new Set();
+
+
+function updateMediaSelectionControls() {
+  if (startMediaSelectionButton) {
+    startMediaSelectionButton.hidden =
+      mediaSelectionMode;
+  }
+
+  if (activeMediaSelectionControls) {
+    activeMediaSelectionControls.hidden =
+      !mediaSelectionMode;
+  }
+
+  if (selectedMediaCount) {
+    const count =
+      selectedMediaIds.size;
+
+    selectedMediaCount.textContent =
+      `${count} selected`;
+  }
+}
+
+
+function enterMediaSelectionMode() {
+  mediaSelectionMode = true;
+
+  selectedMediaIds.clear();
+
+  updateMediaSelectionControls();
+  renderAdminMedia();
+}
+
+
+function exitMediaSelectionMode() {
+  mediaSelectionMode = false;
+
+  selectedMediaIds.clear();
+
+  updateMediaSelectionControls();
+  renderAdminMedia();
+}
+
+
+function toggleMediaSelection(
+  mediaId
+) {
+  const normalisedId =
+    String(mediaId);
+
+  if (
+    selectedMediaIds.has(
+      normalisedId
+    )
+  ) {
+    selectedMediaIds.delete(
+      normalisedId
+    );
+  } else {
+    selectedMediaIds.add(
+      normalisedId
+    );
+  }
+
+  updateMediaSelectionControls();
+  renderAdminMedia();
+}
+
+
+function selectAllVisibleMedia() {
+  const visibleItems =
+    getFilteredAdminMedia();
+
+  const allVisibleSelected =
+    visibleItems.every(
+      item =>
+        selectedMediaIds.has(
+          String(item.id)
+        )
+    );
+
+  visibleItems.forEach(item => {
+    const mediaId =
+      String(item.id);
+
+    if (allVisibleSelected) {
+      selectedMediaIds.delete(
+        mediaId
+      );
+    } else {
+      selectedMediaIds.add(
+        mediaId
+      );
+    }
+  });
+
+  updateMediaSelectionControls();
+  renderAdminMedia();
+}
+
+
+if (startMediaSelectionButton) {
+  startMediaSelectionButton.addEventListener(
+    "click",
+    enterMediaSelectionMode
+  );
+}
+
+
+if (cancelMediaSelectionButton) {
+  cancelMediaSelectionButton.addEventListener(
+    "click",
+    exitMediaSelectionMode
+  );
+}
+
+
+if (selectAllMediaButton) {
+  selectAllMediaButton.addEventListener(
+    "click",
+    selectAllVisibleMedia
+  );
+}
+
+// ============================================================
 // MEDIA VIEWER
 // ============================================================
 
