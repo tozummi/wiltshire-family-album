@@ -655,14 +655,30 @@ const fullActivityList =
     "full-activity-list"
   );
 
+// ============================================================
+// ADMIN VIEW NAVIGATION
+// ============================================================
 
-function showDashboardView() {
+function hideAllAdminViews() {
+  if (dashboardView) {
+    dashboardView.hidden = true;
+  }
+
   if (activityView) {
     activityView.hidden = true;
   }
 
-  if (dashboardView) {
-    dashboardView.hidden = false;
+  if (mediaView) {
+    mediaView.hidden = true;
+  }
+}
+
+
+function showAdminView(view) {
+  hideAllAdminViews();
+
+  if (view) {
+    view.hidden = false;
   }
 
   window.scrollTo({
@@ -672,19 +688,17 @@ function showDashboardView() {
 }
 
 
+function showDashboardView() {
+  showAdminView(
+    dashboardView
+  );
+}
+
+
 async function showActivityView() {
-  if (dashboardView) {
-    dashboardView.hidden = true;
-  }
-
-  if (activityView) {
-    activityView.hidden = false;
-  }
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  showAdminView(
+    activityView
+  );
 
   await loadFullActivity();
 }
@@ -853,22 +867,9 @@ const mediaBackButton =
 
 
 async function showMediaView() {
-  if (dashboardView) {
-    dashboardView.hidden = true;
-  }
-
-  if (activityView) {
-    activityView.hidden = true;
-  }
-
-  if (mediaView) {
-    mediaView.hidden = false;
-  }
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  showAdminView(
+    mediaView
+  );
 
   if (
     typeof loadAdminMedia ===
@@ -880,22 +881,7 @@ async function showMediaView() {
 
 
 function returnToDashboardFromMedia() {
-  if (mediaView) {
-    mediaView.hidden = true;
-  }
-
-  if (activityView) {
-    activityView.hidden = true;
-  }
-
-  if (dashboardView) {
-    dashboardView.hidden = false;
-  }
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  showDashboardView();
 }
 
 
