@@ -657,11 +657,13 @@ const fullActivityList =
 
 
 function showDashboardView() {
-  hideAdminViews();
+  if (activityView) {
+    activityView.hidden = true;
+  }
 
-if (dashboardView) {
-  dashboardView.hidden = false;
-}
+  if (dashboardView) {
+    dashboardView.hidden = false;
+  }
 
   window.scrollTo({
     top: 0,
@@ -671,11 +673,13 @@ if (dashboardView) {
 
 
 async function showActivityView() {
-  hideAdminViews();
+  if (dashboardView) {
+    dashboardView.hidden = true;
+  }
 
-if (activityView) {
-  activityView.hidden = false;
-}
+  if (activityView) {
+    activityView.hidden = false;
+  }
 
   window.scrollTo({
     top: 0,
