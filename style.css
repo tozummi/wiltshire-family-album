@@ -996,3 +996,188 @@ button {
 .video-duration-badge {
   opacity: 0;
 }
+
+/* ==========================================================
+   STAYCATION WEBSITE TYPOGRAPHY AND ALBUM HEADER
+========================================================== */
+
+body {
+  color: #263127;
+  font-family:
+    "DM Sans",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+.album-title {
+  margin: 18px 0 30px;
+
+  font-family:
+    "DM Serif Display",
+    Georgia,
+    serif;
+  font-weight: 400;
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+}
+
+.album-title-icon,
+.album-title-line {
+  display: block;
+}
+
+.album-title-icon {
+  margin-bottom: 11px;
+
+  font-family: initial;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.album-title-wiltshire {
+  color: #435641;
+
+  font-size: clamp(2.45rem, 11vw, 4rem);
+}
+
+.album-title-family {
+  color: #b08b55;
+
+  font-size: clamp(2.45rem, 11vw, 4rem);
+}
+
+#login-box > p,
+#admin-pin-selection > p,
+#name-selection > h2,
+#welcome-message,
+#admin-pin-selection > h2 {
+  color: #435641;
+}
+
+#name-selection > h2,
+#welcome-message,
+#admin-pin-selection > h2 {
+  font-family:
+    "DM Serif Display",
+    Georgia,
+    serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+#welcome-message {
+  margin: 0 0 12px;
+
+  font-size: clamp(2rem, 8vw, 2.75rem);
+  line-height: 1.08;
+}
+
+#name-selection > h2,
+#admin-pin-selection > h2 {
+  font-size: clamp(1.9rem, 8vw, 2.55rem);
+  line-height: 1.08;
+}
+
+/* Matching back button on the regular album login screen */
+
+.back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  min-height: 42px;
+
+  margin-bottom: 19px;
+  padding: 8px 13px;
+
+  background: rgba(255, 253, 248, 0.76);
+
+  border: 1px solid #e6e0d4;
+  border-radius: 999px;
+
+  box-shadow: 0 4px 14px rgba(53, 64, 51, 0.05);
+
+  color: #435641;
+
+  font-size: 0.76rem;
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+.back-home span:first-child {
+  font-family: Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.back-home:active {
+  transform: scale(0.97);
+}
+
+/* Keep both PIN visibility buttons inside their input boxes */
+
+.pin-input-wrapper {
+  position: relative;
+
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.pin-input-wrapper input {
+  width: 100%;
+  padding: 12px 44px 12px 12px;
+
+  box-sizing: border-box;
+}
+
+.pin-input-wrapper button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+
+  width: auto;
+  min-width: 0;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  font-size: 18px;
+  line-height: 1;
+
+  transform: translateY(-50%);
+}
+
+#admin-pin-selection {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+#admin-pin-selection > p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+#admin-pin-btn,
+#admin-pin-back-btn {
+  margin-top: 16px;
+}
+
+@media (max-width: 360px) {
+  .album-title {
+    margin-top: 12px;
+  }
+
+  .album-title-wiltshire,
+  .album-title-family {
+    font-size: 2.35rem;
+  }
+}
