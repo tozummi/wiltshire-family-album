@@ -17,8 +17,16 @@
 
 
   <!-- ======================================================
-       STYLESHEET
+       WEBSITE FONTS AND STYLESHEET
   ======================================================= -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap"
+    rel="stylesheet"
+  >
 
   <link
     rel="stylesheet"
@@ -34,8 +42,10 @@
 
   <div class="container">
 
-    <h1>
-      🌿 Wiltshire Family Album
+    <h1 class="album-title">
+      <span class="album-title-icon" aria-hidden="true">🌿</span>
+      <span class="album-title-line album-title-wiltshire">Wiltshire</span>
+      <span class="album-title-line album-title-family">Family Album</span>
     </h1>
 
 
@@ -44,6 +54,15 @@
     ===================================================== -->
 
     <div id="login-box">
+
+      <a
+        class="back-home"
+        href="https://tozummi.github.io/wiltshire-staycation/"
+        aria-label="Go back to the Wiltshire staycation homepage"
+      >
+        <span aria-hidden="true">←</span>
+        <span>Back to Homepage</span>
+      </a>
 
       <p>
         Enter family code
