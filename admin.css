@@ -1264,3 +1264,154 @@ button {
 .admin-media-selection-indicator {
   background: #5f7258;
 }
+
+/* ==========================================================
+   ADMIN MEDIA DELETE
+========================================================== */
+
+.media-delete-button {
+  min-height: 38px;
+
+  padding: 8px 13px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #9b4a46;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.media-delete-button:disabled {
+  opacity: 0.4;
+
+  cursor: default;
+}
+
+
+.admin-delete-open {
+  overflow: hidden;
+}
+
+.admin-delete-modal[hidden] {
+  display: none;
+}
+
+.admin-delete-modal {
+  position: fixed;
+  inset: 0;
+
+  z-index: 3000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+}
+
+.admin-delete-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background:
+    rgba(28, 23, 19, 0.72);
+
+  backdrop-filter:
+    blur(5px);
+}
+
+.admin-delete-box {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 360px;
+
+  padding: 26px 22px 22px;
+
+  border-radius: 22px;
+
+  background: #faf8f3;
+  color: #332c24;
+
+  text-align: center;
+
+  box-shadow:
+    0 18px 50px
+    rgba(0, 0, 0, 0.30);
+}
+
+.admin-delete-icon {
+  width: 54px;
+  height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 14px;
+
+  border-radius: 50%;
+
+  background: #f2e4e1;
+
+  font-size: 24px;
+}
+
+.admin-delete-box h3 {
+  margin: 0 0 9px;
+
+  font-size: 21px;
+  font-weight: normal;
+}
+
+.admin-delete-box p {
+  max-width: 285px;
+
+  margin: 0 auto 22px;
+
+  color: #71665a;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin-delete-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.admin-delete-actions button {
+  width: 100%;
+
+  padding: 12px 14px;
+
+  border-radius: 12px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+#cancel-admin-delete-btn {
+  border: 1px solid #d8d1c7;
+
+  background: transparent;
+  color: #62574c;
+}
+
+#confirm-admin-delete-btn {
+  border: none;
+
+  background: #9b3e3e;
+  color: #ffffff;
+}
