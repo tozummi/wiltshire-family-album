@@ -1383,6 +1383,7 @@ function updateMediaSelectionControls() {
     selectedMediaCount.textContent =
       `${count} selected`;
   }
+  updateDeleteSelectedButton();
 }
 
 
