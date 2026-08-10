@@ -1487,6 +1487,133 @@ if (selectAllMediaButton) {
 }
 
 // ============================================================
+// ADMIN MEDIA DELETE CONFIRMATION
+// ============================================================
+
+const deleteSelectedMediaButton =
+  document.getElementById(
+    "delete-selected-media-btn"
+  );
+
+const adminDeleteModal =
+  document.getElementById(
+    "admin-delete-modal"
+  );
+
+const adminDeleteTitle =
+  document.getElementById(
+    "admin-delete-title"
+  );
+
+const adminDeleteMessage =
+  document.getElementById(
+    "admin-delete-message"
+  );
+
+const cancelAdminDeleteButton =
+  document.getElementById(
+    "cancel-admin-delete-btn"
+  );
+
+const confirmAdminDeleteButton =
+  document.getElementById(
+    "confirm-admin-delete-btn"
+  );
+
+
+function updateDeleteSelectedButton() {
+  if (!deleteSelectedMediaButton) {
+    return;
+  }
+
+  const count =
+    selectedMediaIds.size;
+
+  deleteSelectedMediaButton.disabled =
+    count === 0;
+
+  deleteSelectedMediaButton.textContent =
+    count === 0
+      ? "🗑️ Delete"
+      : `🗑️ Delete (${count})`;
+}
+
+
+function openAdminDeleteConfirmation() {
+  const count =
+    selectedMediaIds.size;
+
+  if (
+    count === 0 ||
+    !adminDeleteModal
+  ) {
+    return;
+  }
+
+  const itemWord =
+    count === 1
+      ? "item"
+      : "items";
+
+  adminDeleteTitle.textContent =
+    count === 1
+      ? "Delete this item?"
+      : `Delete ${count} items?`;
+
+  adminDeleteMessage.textContent =
+    `The selected ${itemWord} will be permanently removed from the family album. This cannot be undone.`;
+
+  adminDeleteModal.hidden =
+    false;
+
+  document.body.classList.add(
+    "admin-delete-open"
+  );
+}
+
+
+function closeAdminDeleteConfirmation() {
+  if (!adminDeleteModal) {
+    return;
+  }
+
+  adminDeleteModal.hidden =
+    true;
+
+  document.body.classList.remove(
+    "admin-delete-open"
+  );
+}
+
+
+if (deleteSelectedMediaButton) {
+  deleteSelectedMediaButton.addEventListener(
+    "click",
+    openAdminDeleteConfirmation
+  );
+}
+
+
+if (cancelAdminDeleteButton) {
+  cancelAdminDeleteButton.addEventListener(
+    "click",
+    closeAdminDeleteConfirmation
+  );
+}
+
+
+document
+  .querySelectorAll(
+    "[data-close-admin-delete]"
+  )
+  .forEach(element => {
+    element.addEventListener(
+      "click",
+      closeAdminDeleteConfirmation
+    );
+  });
+
+// ============================================================
 // MEDIA VIEWER
 // ============================================================
 
