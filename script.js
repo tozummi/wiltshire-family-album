@@ -927,12 +927,47 @@ async function uploadVideoToCloudinary(
 // PHOTO AND VIDEO UPLOAD HANDLER
 // ============================================================
 
+
+// ------------------------------------------------------------
+// UPLOAD PROTECTION LIMITS
+// ------------------------------------------------------------
+
+const UPLOAD_MAX_FILES =
+  10;
+
+const UPLOAD_MAX_PHOTO_MB =
+  5;
+
+const UPLOAD_MAX_PHOTO_BYTES =
+  UPLOAD_MAX_PHOTO_MB *
+  1024 *
+  1024;
+
+const UPLOAD_MAX_VIDEO_MB =
+  50;
+
+const UPLOAD_MAX_VIDEO_BYTES =
+  UPLOAD_MAX_VIDEO_MB *
+  1024 *
+  1024;
+
+
+// ------------------------------------------------------------
+// HANDLE SELECTED MEDIA
+// ------------------------------------------------------------
+
 mediaInput.onchange =
   async event => {
+
     const files =
       Array.from(
         event.target.files
       );
+
+
+    // --------------------------------------------------------
+    // NOTHING SELECTED
+    // --------------------------------------------------------
 
     if (
       files.length === 0
@@ -940,8 +975,34 @@ mediaInput.onchange =
       return;
     }
 
+
+    // --------------------------------------------------------
+    // MAXIMUM 10 FILES AT ONCE
+    // --------------------------------------------------------
+
+    if (
+      files.length >
+      UPLOAD_MAX_FILES
+    ) {
+      showToast(
+        "You can select up to 10 photos or videos at a time.",
+        "error"
+      );
+
+      event.target.value =
+        "";
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // BEGIN UPLOAD
+    // --------------------------------------------------------
+
     uploadButton.disabled =
       true;
+
 
     let uploadedPhotoCount =
       0;
@@ -955,7 +1016,13 @@ mediaInput.onchange =
     let newestMediaId =
       null;
 
+
     try {
+
+      // ------------------------------------------------------
+      // PROCESS EACH SELECTED FILE
+      // ------------------------------------------------------
+
       for (
         let index = 0;
         index < files.length;
@@ -964,10 +1031,13 @@ mediaInput.onchange =
         const file =
           files[index];
 
+
         uploadButton.textContent =
           `⏳ Uploading ${index + 1} of ${files.length}...`;
 
+
         try {
+
           const isPhoto =
             file.type.startsWith(
               "image/"
@@ -977,6 +1047,11 @@ mediaInput.onchange =
             file.type.startsWith(
               "video/"
             );
+
+
+          // --------------------------------------------------
+          // CHECK SUPPORTED FILE TYPE
+          // --------------------------------------------------
 
           if (
             !isPhoto &&
@@ -988,15 +1063,39 @@ mediaInput.onchange =
           }
 
 
-          // ------------------------------------------
+          // ==================================================
           // PHOTO UPLOAD
-          // ------------------------------------------
+          // ==================================================
 
           if (isPhoto) {
+
+            // -----------------------------------------------
+            // PHOTO FILE-SIZE LIMIT — 5 MB
+            // -----------------------------------------------
+
+            if (
+              file.size >
+              UPLOAD_MAX_PHOTO_BYTES
+            ) {
+              throw new Error(
+                `${file.name} is too large. Photos must be ${UPLOAD_MAX_PHOTO_MB} MB or smaller.`
+              );
+            }
+
+
+            // -----------------------------------------------
+            // PREPARE STILL IMAGE
+            // -----------------------------------------------
+
             const stillImage =
               await prepareStillImage(
                 file
               );
+
+
+            // -----------------------------------------------
+            // UPLOAD PHOTO TO CLOUDINARY
+            // -----------------------------------------------
 
             const cloudinaryData =
               await uploadFileToCloudinary(
@@ -1004,48 +1103,56 @@ mediaInput.onchange =
                 "image"
               );
 
+
+            // -----------------------------------------------
+            // SAVE PHOTO TO SUPABASE
+            // -----------------------------------------------
+
             const {
               data: newPhoto,
               error
-            } = await supabaseClient
-              .from("photos")
-              .insert({
-                image_url:
-                  cloudinaryData.secure_url,
+            } =
+              await supabaseClient
+                .from("photos")
+                .insert({
+                  image_url:
+                    cloudinaryData.secure_url,
 
-                cloudinary_id:
-                  cloudinaryData.public_id,
+                  cloudinary_id:
+                    cloudinaryData.public_id,
 
-                user_id:
-                  currentUser.id,
+                  user_id:
+                    currentUser.id,
 
-                user_name:
-                  currentUser.name,
+                  user_name:
+                    currentUser.name,
 
-                status:
-                  "approved",
+                  status:
+                    "approved",
 
-                media_type:
-                  "photo",
+                  media_type:
+                    "photo",
 
-                original_filename:
-                  stillImage.name,
+                  original_filename:
+                    stillImage.name,
 
-                motion_url:
-                  null,
+                  motion_url:
+                    null,
 
-                motion_cloudinary_id:
-                  null,
+                  motion_cloudinary_id:
+                    null,
 
-                motion_filename:
-                  null
-              })
-              .select("id")
-              .single();
+                  motion_filename:
+                    null
+                })
+                .select("id")
+                .single();
+
 
             if (error) {
               throw error;
             }
+
 
             uploadedPhotoCount++;
 
@@ -1054,24 +1161,35 @@ mediaInput.onchange =
           }
 
 
-          // ------------------------------------------
+          // ==================================================
           // VIDEO UPLOAD
-          // ------------------------------------------
+          // ==================================================
 
           if (isVideo) {
+
+            // -----------------------------------------------
+            // VIDEO FILE-SIZE LIMIT — 50 MB
+            // -----------------------------------------------
+
             if (
               file.size >
-              MAX_VIDEO_SIZE_BYTES
+              UPLOAD_MAX_VIDEO_BYTES
             ) {
               throw new Error(
-                `${file.name} is larger than ${MAX_VIDEO_SIZE_MB} MB.`
+                `${file.name} is too large. Videos must be ${UPLOAD_MAX_VIDEO_MB} MB or smaller.`
               );
             }
+
+
+            // -----------------------------------------------
+            // CHECK VIDEO DURATION
+            // -----------------------------------------------
 
             const videoDuration =
               await getVideoDuration(
                 file
               );
+
 
             if (
               videoDuration >
@@ -1082,10 +1200,20 @@ mediaInput.onchange =
               );
             }
 
+
+            // -----------------------------------------------
+            // UPLOAD VIDEO TO CLOUDINARY
+            // -----------------------------------------------
+
             const cloudinaryData =
               await uploadVideoToCloudinary(
                 file
               );
+
+
+            // -----------------------------------------------
+            // CREATE VIDEO THUMBNAIL URL
+            // -----------------------------------------------
 
             const thumbnailUrl =
               cloudinaryData.secure_url
@@ -1094,104 +1222,139 @@ mediaInput.onchange =
                   ".jpg"
                 );
 
+
+            // -----------------------------------------------
+            // SAVE VIDEO TO SUPABASE
+            // -----------------------------------------------
+
             const {
               data: newVideo,
               error
-            } = await supabaseClient
-              .from("photos")
-              .insert({
-                image_url:
-                  null,
+            } =
+              await supabaseClient
+                .from("photos")
+                .insert({
+                  image_url:
+                    null,
 
-                cloudinary_id:
-                  null,
+                  cloudinary_id:
+                    null,
 
-                video_url:
-                  cloudinaryData.secure_url,
+                  video_url:
+                    cloudinaryData.secure_url,
 
-                video_cloudinary_id:
-                  cloudinaryData.public_id,
+                  video_cloudinary_id:
+                    cloudinaryData.public_id,
 
-                video_thumbnail_url:
-                  thumbnailUrl,
+                  video_thumbnail_url:
+                    thumbnailUrl,
 
-                video_duration_seconds:
-                  Math.round(
-                    videoDuration
-                  ),
+                  video_duration_seconds:
+                    Math.round(
+                      videoDuration
+                    ),
 
-                file_size_bytes:
-                  file.size,
+                  file_size_bytes:
+                    file.size,
 
-                user_id:
-                  currentUser.id,
+                  user_id:
+                    currentUser.id,
 
-                user_name:
-                  currentUser.name,
+                  user_name:
+                    currentUser.name,
 
-                status:
-                  "approved",
+                  status:
+                    "approved",
 
-                media_type:
-                  "video",
+                  media_type:
+                    "video",
 
-                original_filename:
-                  file.name,
+                  original_filename:
+                    file.name,
 
-                motion_url:
-                  null,
+                  motion_url:
+                    null,
 
-                motion_cloudinary_id:
-                  null,
+                  motion_cloudinary_id:
+                    null,
 
-                motion_filename:
-                  null
-              })
-              .select("id")
-              .single();
+                  motion_filename:
+                    null
+                })
+                .select("id")
+                .single();
+
 
             if (error) {
               throw error;
             }
+
 
             uploadedVideoCount++;
 
             newestMediaId =
               newVideo.id;
           }
+
+
         } catch (error) {
+
+          // --------------------------------------------------
+          // INDIVIDUAL FILE FAILURE
+          // --------------------------------------------------
+
           failedCount++;
+
 
           console.log(
             `UPLOAD ERROR FOR ${file.name}:`,
             error
           );
 
+
           console.log(
             error.message
           );
-          
+
+
           showToast(
             error.message ||
-            "The video upload failed.",
+            "The upload failed.",
             "error"
           );
         }
       }
 
+
+      // ------------------------------------------------------
+      // RESET FILE INPUT
+      // ------------------------------------------------------
+
       event.target.value =
         "";
+
+
+      // ------------------------------------------------------
+      // REFRESH GALLERY
+      // ------------------------------------------------------
 
       await loadGallery(
         newestMediaId
       );
 
+
+      // ------------------------------------------------------
+      // BUILD UPLOAD SUMMARY
+      // ------------------------------------------------------
+
       const uploadedCount =
         uploadedPhotoCount +
         uploadedVideoCount;
 
+
       const uploadedParts =
         [];
+
 
       if (
         uploadedPhotoCount > 0
@@ -1205,6 +1368,7 @@ mediaInput.onchange =
         );
       }
 
+
       if (
         uploadedVideoCount > 0
       ) {
@@ -1217,6 +1381,11 @@ mediaInput.onchange =
         );
       }
 
+
+      // ------------------------------------------------------
+      // SUCCESS / FAILURE MESSAGE
+      // ------------------------------------------------------
+
       if (
         uploadedCount > 0 &&
         failedCount === 0
@@ -1226,6 +1395,7 @@ mediaInput.onchange =
             " and "
           )} uploaded successfully! 📸🎥`
         );
+
       } else if (
         uploadedCount > 0
       ) {
@@ -1235,12 +1405,20 @@ mediaInput.onchange =
           )} uploaded, ${failedCount} failed.`,
           "error"
         );
+
       } else {
-  console.log(
-    "All selected files failed to upload."
-  );
-}
+        console.log(
+          "All selected files failed to upload."
+        );
+      }
+
+
     } finally {
+
+      // ------------------------------------------------------
+      // RESTORE UPLOAD BUTTON
+      // ------------------------------------------------------
+
       uploadButton.disabled =
         false;
 
@@ -1248,7 +1426,6 @@ mediaInput.onchange =
         "Upload Photos or Videos 📸🎥";
     }
   };
-        
 
 // ============================================================
 // PHOTO VIEWER
