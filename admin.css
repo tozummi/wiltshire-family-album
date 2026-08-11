@@ -1415,3 +1415,107 @@ button {
   background: #9b3e3e;
   color: #ffffff;
 }
+
+/* ==========================================================
+   ADMIN SETTINGS
+========================================================== */
+
+.admin-setting-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  padding: 16px;
+
+  border: 1px solid #e6dfd5;
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 3px 10px
+    rgba(60, 47, 31, 0.05);
+}
+
+.admin-setting-title {
+  margin: 0;
+
+  color: #332c24;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.admin-setting-description {
+  margin: 4px 0 0;
+
+  color: #776b5f;
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.admin-switch {
+  position: relative;
+
+  width: 48px;
+  height: 28px;
+
+  flex-shrink: 0;
+}
+
+.admin-switch input {
+  width: 0;
+  height: 0;
+
+  opacity: 0;
+}
+
+.admin-switch-slider {
+  position: absolute;
+  inset: 0;
+
+  border-radius: 999px;
+
+  background: #d7d0c6;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease;
+}
+
+.admin-switch-slider::before {
+  content: "";
+
+  position: absolute;
+
+  width: 22px;
+  height: 22px;
+
+  left: 3px;
+  top: 3px;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 2px 6px
+    rgba(0, 0, 0, 0.18);
+
+  transition:
+    transform 0.2s ease;
+}
+
+.admin-switch input:checked +
+.admin-switch-slider {
+  background: #718268;
+}
+
+.admin-switch input:checked +
+.admin-switch-slider::before {
+  transform:
+    translateX(20px);
+}
