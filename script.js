@@ -922,6 +922,233 @@ async function uploadVideoToCloudinary(
   return data;
 }
 
+// ============================================================
+// DAILY UPLOAD LIMIT
+// ============================================================
+
+const dailyUploadStatus =
+  document.getElementById(
+    "daily-upload-status"
+  );
+
+let dailyUploadLimitEnabled =
+  true;
+
+let dailyUploadsRemaining =
+  10;
+
+
+// ------------------------------------------------------------
+// UPDATE DAILY UPLOAD DISPLAY
+// ------------------------------------------------------------
+
+function updateDailyUploadDisplay() {
+  if (!dailyUploadStatus) {
+    return;
+  }
+
+  dailyUploadStatus.classList.remove(
+    "limit-reached"
+  );
+
+
+  if (!dailyUploadLimitEnabled) {
+    dailyUploadStatus.textContent =
+      "Daily upload limit is currently off.";
+
+    return;
+  }
+
+
+  if (
+    dailyUploadsRemaining <= 0
+  ) {
+    dailyUploadStatus.textContent =
+      "You've used all 10 uploads for today.";
+
+    dailyUploadStatus.classList.add(
+      "limit-reached"
+    );
+
+    return;
+  }
+
+
+  dailyUploadStatus.textContent =
+    `${dailyUploadsRemaining} upload${
+      dailyUploadsRemaining === 1
+        ? ""
+        : "s"
+    } remaining today`;
+}
+
+
+// ------------------------------------------------------------
+// LOAD CURRENT DAILY STATUS
+// ------------------------------------------------------------
+
+async function loadDailyUploadStatus() {
+  if (!currentUser) {
+    return;
+  }
+
+
+  try {
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.rpc(
+        "get_daily_upload_status",
+        {
+          p_user_id:
+            currentUser.id
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const status =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+
+    if (!status) {
+      throw new Error(
+        "Upload allowance could not be read."
+      );
+    }
+
+
+    dailyUploadLimitEnabled =
+      status.enabled === true;
+
+    dailyUploadsRemaining =
+      Number(
+        status.remaining
+      ) || 0;
+
+
+    updateDailyUploadDisplay();
+
+  } catch (error) {
+    console.error(
+      "DAILY UPLOAD STATUS ERROR:",
+      error
+    );
+
+
+    if (dailyUploadStatus) {
+      dailyUploadStatus.textContent =
+        "Today's upload allowance could not be checked.";
+    }
+  }
+}
+
+
+// ------------------------------------------------------------
+// RESERVE DAILY UPLOAD SLOTS
+// ------------------------------------------------------------
+
+async function reserveDailyUploadSlots(
+  requestedCount
+) {
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.rpc(
+      "reserve_daily_upload_slots",
+      {
+        p_user_id:
+          currentUser.id,
+
+        p_requested:
+          requestedCount
+      }
+    );
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  const result =
+    Array.isArray(data)
+      ? data[0]
+      : data;
+
+
+  if (!result) {
+    throw new Error(
+      "Upload allowance could not be checked."
+    );
+  }
+
+
+  dailyUploadLimitEnabled =
+    result.enabled === true;
+
+  dailyUploadsRemaining =
+    Number(
+      result.remaining
+    ) || 0;
+
+
+  updateDailyUploadDisplay();
+
+
+  return result;
+}
+
+
+// ------------------------------------------------------------
+// RELEASE FAILED / UNUSED UPLOAD SLOTS
+// ------------------------------------------------------------
+
+async function releaseDailyUploadSlots(
+  releaseCount
+) {
+  if (
+    !dailyUploadLimitEnabled ||
+    releaseCount <= 0
+  ) {
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient.rpc(
+      "release_daily_upload_slots",
+      {
+        p_user_id:
+          currentUser.id,
+
+        p_release:
+          releaseCount
+      }
+    );
+
+
+  if (error) {
+    console.error(
+      "UPLOAD SLOT RELEASE ERROR:",
+      error
+    );
+  }
+
+
+  await loadDailyUploadStatus();
+}
+
 
 // ============================================================
 // PHOTO AND VIDEO UPLOAD HANDLER
@@ -988,6 +1215,75 @@ mediaInput.onchange =
         "You can select up to 10 photos or videos at a time.",
         "error"
       );
+
+      event.target.value =
+        "";
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // CHECK DAILY UPLOAD ALLOWANCE
+    // --------------------------------------------------------
+
+    let reservedUploadSlots =
+      0;
+
+
+    try {
+      const allowance =
+        await reserveDailyUploadSlots(
+          files.length
+        );
+
+
+      if (
+        allowance.enabled &&
+        !allowance.allowed
+      ) {
+        const remaining =
+          Number(
+            allowance.remaining
+          ) || 0;
+
+
+        showToast(
+          remaining === 0
+            ? "You've used all 10 uploads for today."
+            : `You only have ${remaining} upload${
+                remaining === 1
+                  ? ""
+                  : "s"
+              } remaining today.`,
+          "error"
+        );
+
+
+        event.target.value =
+          "";
+
+        return;
+      }
+
+
+      if (allowance.enabled) {
+        reservedUploadSlots =
+          files.length;
+      }
+
+    } catch (error) {
+      console.error(
+        "UPLOAD ALLOWANCE ERROR:",
+        error
+      );
+
+
+      showToast(
+        "Your upload allowance could not be checked. Please try again.",
+        "error"
+      );
+
 
       event.target.value =
         "";
@@ -1212,7 +1508,7 @@ mediaInput.onchange =
 
 
             // -----------------------------------------------
-            // CREATE VIDEO THUMBNAIL URL
+            // CREATE VIDEO THUMBNAIL
             // -----------------------------------------------
 
             const thumbnailUrl =
@@ -1414,6 +1710,35 @@ mediaInput.onchange =
 
 
     } finally {
+
+      // ------------------------------------------------------
+      // CORRECT DAILY UPLOAD COUNT
+      // ------------------------------------------------------
+
+      const successfulUploadCount =
+        uploadedPhotoCount +
+        uploadedVideoCount;
+
+
+      const unusedReservedSlots =
+        Math.max(
+          reservedUploadSlots -
+          successfulUploadCount,
+          0
+        );
+
+
+      if (
+        unusedReservedSlots > 0
+      ) {
+        await releaseDailyUploadSlots(
+          unusedReservedSlots
+        );
+
+      } else {
+        await loadDailyUploadStatus();
+      }
+
 
       // ------------------------------------------------------
       // RESTORE UPLOAD BUTTON
