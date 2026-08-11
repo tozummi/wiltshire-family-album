@@ -1297,3 +1297,23 @@ body {
   font-family: "DM Sans", sans-serif;
   font-size: 0.7rem;
 }
+
+/* ==========================================================
+   DAILY UPLOAD STATUS
+========================================================== */
+
+.daily-upload-status {
+  margin: 9px 0 0;
+
+  color: #776b5f;
+
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.daily-upload-status.limit-reached {
+  color: #9b4a46;
+
+  font-weight: 700;
+}
