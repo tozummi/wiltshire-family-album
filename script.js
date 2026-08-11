@@ -303,6 +303,7 @@ function enterAlbum(member) {
       : "none";
 
   loadGallery();
+  loadDailyUploadStatus();
 }
   
 async function verifyAdminPin() {
@@ -426,6 +427,7 @@ adminButton.style.display =
     : "none";
     
     loadGallery();
+    loadDailyUploadStatus();
   } catch (error) {
     localStorage.removeItem(
       "familyAlbumUser"
