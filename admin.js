@@ -1615,6 +1615,175 @@ document
   });
 
 // ============================================================
+// ADMIN BULK MEDIA DELETION
+// ============================================================
+
+async function deleteSelectedAdminMedia() {
+  const selectedIds =
+    Array.from(
+      selectedMediaIds
+    );
+
+  if (
+    selectedIds.length === 0
+  ) {
+    return;
+  }
+
+
+  confirmAdminDeleteButton.disabled =
+    true;
+
+  confirmAdminDeleteButton.textContent =
+    "Deleting...";
+
+
+  let deletedCount = 0;
+  let failedCount = 0;
+
+
+  try {
+    for (
+      const mediaId of selectedIds
+    ) {
+      try {
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .functions
+            .invoke(
+              "delete-photo",
+              {
+                body: {
+                  photoId:
+                    mediaId,
+
+                  userId:
+                    currentAdmin.id
+                }
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        if (!data?.success) {
+          throw new Error(
+            data?.error ||
+            "The media could not be deleted."
+          );
+        }
+
+
+        deletedCount++;
+
+      } catch (error) {
+        failedCount++;
+
+        console.error(
+          `ADMIN DELETE ERROR FOR ${mediaId}:`,
+          error
+        );
+      }
+    }
+
+
+    closeAdminDeleteConfirmation();
+
+
+    /*
+      Remove successfully deleted items from
+      the current local list immediately.
+    */
+
+    const selectedIdSet =
+      new Set(
+        selectedIds
+      );
+
+
+    adminMediaItems =
+      adminMediaItems.filter(
+        item =>
+          !selectedIdSet.has(
+            String(item.id)
+          )
+      );
+
+
+    /*
+      Leave selection mode and clear all
+      selected IDs.
+    */
+
+    mediaSelectionMode =
+      false;
+
+    selectedMediaIds.clear();
+
+    updateMediaSelectionControls();
+
+
+    /*
+      Reload from Supabase so the admin view
+      reflects the real database state.
+    */
+
+    await loadAdminMedia();
+
+    await loadDashboardStatistics();
+
+    await loadRecentActivity();
+
+
+    if (
+      deletedCount > 0 &&
+      failedCount === 0
+    ) {
+      alert(
+        `${deletedCount} ${
+          deletedCount === 1
+            ? "item"
+            : "items"
+        } deleted successfully.`
+      );
+
+    } else if (
+      deletedCount > 0
+    ) {
+      alert(
+        `${deletedCount} deleted, ${failedCount} failed.`
+      );
+
+    } else {
+      alert(
+        "The selected media could not be deleted."
+      );
+    }
+
+  } finally {
+    confirmAdminDeleteButton.disabled =
+      false;
+
+    confirmAdminDeleteButton.textContent =
+      "Delete permanently";
+  }
+}
+
+
+if (confirmAdminDeleteButton) {
+  confirmAdminDeleteButton.addEventListener(
+    "click",
+    deleteSelectedAdminMedia
+  );
+}
+
+// ============================================================
 // MEDIA VIEWER
 // ============================================================
 
