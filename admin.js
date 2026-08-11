@@ -123,6 +123,7 @@ function initialiseAdminPage() {
   loadDashboardStatistics();
   loadSystemHealth();
   loadRecentActivity();
+  loadAdminDailyLimit();
   
   history.replaceState(
   {
@@ -2205,6 +2206,144 @@ window.addEventListener(
     );
   }
 );
+
+// ============================================================
+// DAILY UPLOAD LIMIT CONTROL
+// ============================================================
+
+const adminDailyLimitToggle =
+  document.getElementById(
+    "admin-daily-limit-toggle"
+  );
+
+const adminDailyLimitDescription =
+  document.getElementById(
+    "admin-daily-limit-description"
+  );
+
+
+async function loadAdminDailyLimit() {
+  try {
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("settings")
+        .select("value")
+        .eq(
+          "key",
+          "daily_upload_limit_enabled"
+        )
+        .single();
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const enabled =
+      String(
+        data.value
+      ) === "true";
+
+
+    if (adminDailyLimitToggle) {
+      adminDailyLimitToggle.checked =
+        enabled;
+    }
+
+
+    if (
+      adminDailyLimitDescription
+    ) {
+      adminDailyLimitDescription.textContent =
+        enabled
+          ? "Maximum 10 successful uploads per person each day."
+          : "Daily upload limits are currently disabled.";
+    }
+
+  } catch (error) {
+    console.error(
+      "DAILY LIMIT LOAD ERROR:",
+      error
+    );
+  }
+}
+
+
+async function changeAdminDailyLimit() {
+  if (
+    !adminDailyLimitToggle ||
+    !currentAdmin
+  ) {
+    return;
+  }
+
+
+  const requestedState =
+    adminDailyLimitToggle.checked;
+
+
+  adminDailyLimitToggle.disabled =
+    true;
+
+
+  try {
+    const {
+      error
+    } =
+      await supabaseClient.rpc(
+        "set_daily_upload_limit_enabled",
+        {
+          p_user_id:
+            currentAdmin.id,
+
+          p_enabled:
+            requestedState
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    adminDailyLimitDescription.textContent =
+      requestedState
+        ? "Maximum 10 successful uploads per person each day."
+        : "Daily upload limits are currently disabled.";
+
+  } catch (error) {
+    console.error(
+      "DAILY LIMIT UPDATE ERROR:",
+      error
+    );
+
+
+    adminDailyLimitToggle.checked =
+      !requestedState;
+
+
+    alert(
+      "The daily upload setting could not be changed."
+    );
+
+  } finally {
+    adminDailyLimitToggle.disabled =
+      false;
+  }
+}
+
+
+if (adminDailyLimitToggle) {
+  adminDailyLimitToggle.addEventListener(
+    "change",
+    changeAdminDailyLimit
+  );
+}
 
 // ============================================================
 // START ADMIN PAGE
