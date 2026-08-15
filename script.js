@@ -3289,6 +3289,8 @@ confirmDeleteButton.onclick =
 
       await loadGallery();
 
+      await loadR2StorageUsage();
+
       const deletedMediaType =
   galleryPhotos[
     currentPhotoIndex
