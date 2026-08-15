@@ -1377,3 +1377,15 @@ body {
   font-size: 11px;
   line-height: 1.4;
 }
+
+/* ==========================================================
+   ADMIN DASHBOARD BUTTON POSITION
+========================================================== */
+
+.admin-button-wrapper {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
