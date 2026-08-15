@@ -246,26 +246,62 @@
 
       <!-- Uploaded photos are inserted here by script.js -->
 
-      <p
-        id="daily-upload-status"
-        class="daily-upload-status"
-      >
-        Checking today's upload allowance...
-      </p>
+<p
+  id="daily-upload-status"
+  class="daily-upload-status"
+>
+  Checking today's upload allowance...
+</p>
 
-      <button
-        id="admin-btn"
-        type="button"
-        style="display: none;"
-      >
-        Admin Dashboard ⚙️
-      </button>
 
-      <div id="gallery"></div>
+<!-- R2 STORAGE METER -->
 
-    </div>
+<div
+  id="album-storage-meter"
+  class="storage-meter"
+>
+  <div class="storage-meter-heading">
+
+    <span>Album storage</span>
+
+    <span id="album-storage-percent">
+      0%
+    </span>
 
   </div>
+
+  <div class="storage-meter-track">
+
+    <div
+      id="album-storage-fill"
+      class="storage-meter-fill"
+    ></div>
+
+  </div>
+
+  <p
+    id="album-storage-detail"
+    class="storage-meter-detail"
+  >
+    0 GB of 10 GB used
+  </p>
+
+</div>
+
+
+<button
+  id="admin-btn"
+  type="button"
+  style="display: none;"
+>
+  Admin Dashboard ⚙️
+</button>
+
+<div id="gallery"></div>
+
+</div>
+
+</div>
 
 
   <!-- ======================================================
