@@ -304,6 +304,7 @@ function enterAlbum(member) {
 
   loadGallery();
   loadDailyUploadStatus();
+  loadR2StorageUsage();
 }
   
 async function verifyAdminPin() {
