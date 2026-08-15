@@ -124,6 +124,7 @@ function initialiseAdminPage() {
   loadSystemHealth();
   loadRecentActivity();
   loadAdminDailyLimit();
+  loadAdminR2StorageUsage();
   
   history.replaceState(
   {
@@ -2471,6 +2472,187 @@ if (adminDailyLimitToggle) {
     "change",
     changeAdminDailyLimit
   );
+}
+
+// ============================================================
+// ADMIN R2 STORAGE
+// ============================================================
+
+const adminStoragePercent =
+  document.getElementById(
+    "admin-storage-percent"
+  );
+
+const adminStorageFill =
+  document.getElementById(
+    "admin-storage-fill"
+  );
+
+const adminStorageTotal =
+  document.getElementById(
+    "admin-storage-total"
+  );
+
+const adminPhotoStorage =
+  document.getElementById(
+    "admin-photo-storage"
+  );
+
+const adminVideoStorage =
+  document.getElementById(
+    "admin-video-storage"
+  );
+
+const adminThumbnailStorage =
+  document.getElementById(
+    "admin-thumbnail-storage"
+  );
+
+const adminStorageObjects =
+  document.getElementById(
+    "admin-storage-objects"
+  );
+
+
+function formatAdminStorage(
+  gb
+) {
+  if (
+    gb < 0.01
+  ) {
+    return `${(
+      gb * 1000
+    ).toFixed(1)} MB`;
+  }
+
+
+  return `${gb.toFixed(2)} GB`;
+}
+
+
+async function loadAdminR2StorageUsage() {
+  try {
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "r2-usage",
+          {
+            body: {}
+          }
+        );
+
+
+    if (
+      error ||
+      !data?.success
+    ) {
+      throw new Error(
+        data?.error ||
+        "Storage usage could not be loaded."
+      );
+    }
+
+
+    const percent =
+      Number(
+        data.percentUsed
+      ) || 0;
+
+
+    if (
+      adminStoragePercent
+    ) {
+      adminStoragePercent.textContent =
+        `${percent.toFixed(1)}%`;
+    }
+
+
+    if (
+      adminStorageFill
+    ) {
+      adminStorageFill.style.width =
+        `${Math.min(
+          percent,
+          100
+        )}%`;
+    }
+
+
+    if (
+      adminStorageTotal
+    ) {
+      adminStorageTotal.textContent =
+        `${formatAdminStorage(
+          Number(
+            data.totalGB
+          ) || 0
+        )} of 10 GB used`;
+    }
+
+
+    if (
+      adminPhotoStorage
+    ) {
+      adminPhotoStorage.textContent =
+        formatAdminStorage(
+          Number(
+            data.photoGB
+          ) || 0
+        );
+    }
+
+
+    if (
+      adminVideoStorage
+    ) {
+      adminVideoStorage.textContent =
+        formatAdminStorage(
+          Number(
+            data.videoGB
+          ) || 0
+        );
+    }
+
+
+    if (
+      adminThumbnailStorage
+    ) {
+      adminThumbnailStorage.textContent =
+        formatAdminStorage(
+          Number(
+            data.thumbnailGB
+          ) || 0
+        );
+    }
+
+
+    if (
+      adminStorageObjects
+    ) {
+      adminStorageObjects.textContent =
+        String(
+          data.totalObjects || 0
+        );
+    }
+
+  } catch (error) {
+    console.error(
+      "ADMIN R2 STORAGE ERROR:",
+      error
+    );
+
+
+    if (
+      adminStorageTotal
+    ) {
+      adminStorageTotal.textContent =
+        "Storage usage unavailable";
+    }
+  }
 }
 
 // ============================================================
