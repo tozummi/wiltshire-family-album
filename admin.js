@@ -1870,6 +1870,8 @@ async function deleteSelectedAdminMedia() {
 
     await loadRecentActivity();
 
+    await loadAdminR2StorageUsage();
+
 
     if (
       deletedCount > 0 &&
