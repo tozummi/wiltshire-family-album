@@ -429,6 +429,7 @@ adminButton.style.display =
     
     loadGallery();
     loadDailyUploadStatus();
+    loadR2StorageUsage();
   } catch (error) {
     localStorage.removeItem(
       "familyAlbumUser"
