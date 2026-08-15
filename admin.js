@@ -1203,7 +1203,61 @@ function renderAdminMedia() {
 }
   
 
-  
+// ============================================================
+// R2 ADMIN MEDIA URLS
+// ============================================================
+
+async function getAdminR2ReadUrls(
+  objectKeys
+) {
+  const uniqueKeys =
+    [
+      ...new Set(
+        objectKeys.filter(
+          Boolean
+        )
+      )
+    ];
+
+
+  if (
+    uniqueKeys.length === 0
+  ) {
+    return {};
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .functions
+      .invoke(
+        "r2-read",
+        {
+          body: {
+            objectKeys:
+              uniqueKeys
+          }
+        }
+      );
+
+
+  if (
+    error ||
+    !data?.success
+  ) {
+    throw new Error(
+      data?.error ||
+      "The admin media URLs could not be created."
+    );
+  }
+
+
+  return data.urls || {};
+}
+
 async function loadAdminMedia() {
   if (!adminMediaGrid) {
     return;
@@ -1227,26 +1281,30 @@ async function loadAdminMedia() {
     const {
       data,
       error
-    } = await supabaseClient
-      .from("photos")
-      .select(`
-        id,
-        image_url,
-        video_url,
-        video_thumbnail_url,
-        media_type,
-        user_name,
-        caption,
-        original_filename,
-        status,
-        created_at
-      `)
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
+    } =
+      await supabaseClient
+        .from("photos")
+        .select(`
+          id,
+          image_url,
+          video_url,
+          video_thumbnail_url,
+          r2_object_key,
+          r2_thumbnail_key,
+          media_type,
+          user_name,
+          caption,
+          original_filename,
+          status,
+          created_at
+        `)
+        .order(
+          "created_at",
+          {
+            ascending:
+              false
+          }
+        );
 
 
     if (error) {
@@ -1254,11 +1312,80 @@ async function loadAdminMedia() {
     }
 
 
-    adminMediaItems =
+    const mediaItems =
       data || [];
 
 
+    // --------------------------------------------------------
+    // CREATE TEMPORARY R2 VIEWING URLS
+    // --------------------------------------------------------
+
+    const r2Keys =
+      mediaItems.flatMap(
+        media => [
+          media.r2_object_key,
+          media.r2_thumbnail_key
+        ]
+      );
+
+
+    const r2Urls =
+      await getAdminR2ReadUrls(
+        r2Keys
+      );
+
+
+    // --------------------------------------------------------
+    // PUT TEMPORARY URLS INTO THE SAME FIELDS THE ADMIN UI
+    // ALREADY KNOWS HOW TO USE
+    // --------------------------------------------------------
+
+    mediaItems.forEach(
+      media => {
+
+        if (
+          media.media_type ===
+          "video"
+        ) {
+          if (
+            media.r2_object_key
+          ) {
+            media.video_url =
+              r2Urls[
+                media.r2_object_key
+              ] || null;
+          }
+
+
+          if (
+            media.r2_thumbnail_key
+          ) {
+            media.video_thumbnail_url =
+              r2Urls[
+                media.r2_thumbnail_key
+              ] || null;
+          }
+
+        } else {
+          if (
+            media.r2_object_key
+          ) {
+            media.image_url =
+              r2Urls[
+                media.r2_object_key
+              ] || null;
+          }
+        }
+      }
+    );
+
+
+    adminMediaItems =
+      mediaItems;
+
+
     renderAdminMedia();
+
 
   } catch (error) {
     console.error(
@@ -1267,7 +1394,9 @@ async function loadAdminMedia() {
     );
 
 
-    if (mediaResultsCount) {
+    if (
+      mediaResultsCount
+    ) {
       mediaResultsCount.textContent =
         "Unable to load media";
     }
@@ -1284,7 +1413,6 @@ async function loadAdminMedia() {
     `;
   }
 }
-
 
 function changeMediaFilter(
   event
