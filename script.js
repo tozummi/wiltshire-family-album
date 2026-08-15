@@ -2078,6 +2078,8 @@ mediaInput.onchange =
         newestMediaId
       );
 
+      await loadR2StorageUsage();
+
 
       // ------------------------------------------------------
       // BUILD UPLOAD SUMMARY
