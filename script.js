@@ -762,50 +762,148 @@ async function prepareStillImage(
 
 
 // ============================================================
-// CLOUDINARY PHOTO UPLOAD
+// CLOUDFLARE R2 HELPERS
 // ============================================================
 
-async function uploadFileToCloudinary(
+async function getR2UploadDetails(
   file,
-  resourceType = "image"
+  mediaType
 ) {
-  const formData =
-    new FormData();
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .functions
+      .invoke(
+        "r2-upload",
+        {
+          body: {
+            fileName:
+              file.name,
 
-  formData.append(
-    "file",
-    file
-  );
+            contentType:
+              file.type,
 
-  formData.append(
-    "upload_preset",
-    CLOUDINARY_UPLOAD_PRESET
-  );
+            mediaType
+          }
+        }
+      );
 
-  const response =
-    await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`,
-      {
-        method: "POST",
-        body: formData
-      }
-    );
-
-  const cloudinaryData =
-    await response.json();
 
   if (
-    !response.ok ||
-    !cloudinaryData.secure_url
+    error ||
+    !data?.success ||
+    !data?.uploadUrl ||
+    !data?.objectKey
   ) {
     throw new Error(
-      cloudinaryData.error
-        ?.message ||
-      "The file could not be uploaded."
+      data?.error ||
+      "The R2 upload could not be prepared."
     );
   }
 
-  return cloudinaryData;
+
+  return data;
+}
+
+
+async function uploadFileToR2(
+  file,
+  mediaType
+) {
+  const uploadDetails =
+    await getR2UploadDetails(
+      file,
+      mediaType
+    );
+
+
+  const response =
+    await fetch(
+      uploadDetails.uploadUrl,
+      {
+        method:
+          "PUT",
+
+        headers: {
+          "Content-Type":
+            file.type
+        },
+
+        body:
+          file
+      }
+    );
+
+
+  if (!response.ok) {
+    throw new Error(
+      "The file could not be uploaded to storage."
+    );
+  }
+
+
+  return {
+    objectKey:
+      uploadDetails.objectKey
+  };
+}
+
+
+// ============================================================
+// R2 TEMPORARY READ URLS
+// ============================================================
+
+async function getR2ReadUrls(
+  objectKeys
+) {
+  const uniqueKeys =
+    [
+      ...new Set(
+        objectKeys.filter(
+          Boolean
+        )
+      )
+    ];
+
+
+  if (
+    uniqueKeys.length === 0
+  ) {
+    return {};
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .functions
+      .invoke(
+        "r2-read",
+        {
+          body: {
+            objectKeys:
+              uniqueKeys
+          }
+        }
+      );
+
+
+  if (
+    error ||
+    !data?.success
+  ) {
+    throw new Error(
+      data?.error ||
+      "The album media could not be loaded."
+    );
+  }
+
+
+  return data.urls || {};
 }
 
 
@@ -835,19 +933,24 @@ function getVideoDuration(file) {
         );
 
       const videoUrl =
-        URL.createObjectURL(file);
+        URL.createObjectURL(
+          file
+        );
 
       video.preload =
         "metadata";
+
 
       video.onloadedmetadata =
         () => {
           const duration =
             video.duration;
 
+
           URL.revokeObjectURL(
             videoUrl
           );
+
 
           if (
             !Number.isFinite(
@@ -863,8 +966,12 @@ function getVideoDuration(file) {
             return;
           }
 
-          resolve(duration);
+
+          resolve(
+            duration
+          );
         };
+
 
       video.onerror =
         () => {
@@ -879,6 +986,7 @@ function getVideoDuration(file) {
           );
         };
 
+
       video.src =
         videoUrl;
     }
@@ -886,43 +994,216 @@ function getVideoDuration(file) {
 }
 
 
-async function uploadVideoToCloudinary(
+// ============================================================
+// VIDEO THUMBNAIL CREATION
+// ============================================================
+
+function createVideoThumbnail(
   file
 ) {
-  const formData =
-    new FormData();
+  return new Promise(
+    (resolve, reject) => {
+      const video =
+        document.createElement(
+          "video"
+        );
 
-  formData.append(
-    "file",
-    file
-  );
+      const videoUrl =
+        URL.createObjectURL(
+          file
+        );
 
-  formData.append(
-    "upload_preset",
-    VIDEO_UPLOAD_PRESET
-  );
 
-  const response =
-    await fetch(
-      `https://api.cloudinary.com/v1_1/${VIDEO_CLOUD_NAME}/video/upload`,
-      {
-        method: "POST",
-        body: formData
+      video.preload =
+        "metadata";
+
+      video.muted =
+        true;
+
+      video.playsInline =
+        true;
+
+
+      let finished =
+        false;
+
+
+      function cleanup() {
+        if (finished) {
+          return;
+        }
+
+        finished =
+          true;
+
+        URL.revokeObjectURL(
+          videoUrl
+        );
       }
-    );
 
-  const data =
-    await response.json();
 
-  if (!response.ok) {
-    throw new Error(
-      data.error?.message ||
-      "The video upload failed."
-    );
-  }
+      video.onerror =
+        () => {
+          cleanup();
 
-  return data;
+          reject(
+            new Error(
+              "A preview image could not be created for this video."
+            )
+          );
+        };
+
+
+      video.onloadedmetadata =
+        () => {
+          if (
+            !Number.isFinite(
+              video.duration
+            ) ||
+            video.duration <= 0
+          ) {
+            cleanup();
+
+            reject(
+              new Error(
+                "The video preview could not be prepared."
+              )
+            );
+
+            return;
+          }
+
+
+          const targetTime =
+            Math.min(
+              1,
+              Math.max(
+                video.duration *
+                  0.15,
+                0.1
+              )
+            );
+
+
+          video.currentTime =
+            targetTime;
+        };
+
+
+      video.onseeked =
+        () => {
+          const canvas =
+            document.createElement(
+              "canvas"
+            );
+
+
+          const maximumWidth =
+            720;
+
+
+          const scale =
+            Math.min(
+              1,
+              maximumWidth /
+                video.videoWidth
+            );
+
+
+          canvas.width =
+            Math.max(
+              1,
+              Math.round(
+                video.videoWidth *
+                scale
+              )
+            );
+
+          canvas.height =
+            Math.max(
+              1,
+              Math.round(
+                video.videoHeight *
+                scale
+              )
+            );
+
+
+          const context =
+            canvas.getContext(
+              "2d"
+            );
+
+
+          if (!context) {
+            cleanup();
+
+            reject(
+              new Error(
+                "The video preview could not be prepared."
+              )
+            );
+
+            return;
+          }
+
+
+          context.drawImage(
+            video,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+
+
+          canvas.toBlob(
+            blob => {
+              cleanup();
+
+
+              if (!blob) {
+                reject(
+                  new Error(
+                    "The video preview could not be created."
+                  )
+                );
+
+                return;
+              }
+
+
+              const baseName =
+                file.name.replace(
+                  /\.[^/.]+$/,
+                  ""
+                );
+
+
+              resolve(
+                new File(
+                  [blob],
+                  `${baseName}-thumbnail.jpg`,
+                  {
+                    type:
+                      "image/jpeg"
+                  }
+                )
+              );
+            },
+
+            "image/jpeg",
+            0.82
+          );
+        };
+
+
+      video.src =
+        videoUrl;
+    }
+  );
 }
+
 
 // ============================================================
 // DAILY UPLOAD LIMIT
@@ -932,6 +1213,7 @@ const dailyUploadStatus =
   document.getElementById(
     "daily-upload-status"
   );
+
 
 let dailyUploadLimitEnabled =
   true;
@@ -949,12 +1231,15 @@ function updateDailyUploadDisplay() {
     return;
   }
 
+
   dailyUploadStatus.classList.remove(
     "limit-reached"
   );
 
 
-  if (!dailyUploadLimitEnabled) {
+  if (
+    !dailyUploadLimitEnabled
+  ) {
     dailyUploadStatus.textContent =
       "Daily upload limit is currently off.";
 
@@ -1045,7 +1330,9 @@ async function loadDailyUploadStatus() {
     );
 
 
-    if (dailyUploadStatus) {
+    if (
+      dailyUploadStatus
+    ) {
       dailyUploadStatus.textContent =
         "Today's upload allowance could not be checked.";
     }
@@ -1111,7 +1398,7 @@ async function reserveDailyUploadSlots(
 
 
 // ------------------------------------------------------------
-// RELEASE FAILED / UNUSED UPLOAD SLOTS
+// RELEASE FAILED / UNUSED DAILY SLOTS
 // ------------------------------------------------------------
 
 async function releaseDailyUploadSlots(
@@ -1218,6 +1505,7 @@ mediaInput.onchange =
         "error"
       );
 
+
       event.target.value =
         "";
 
@@ -1269,7 +1557,9 @@ mediaInput.onchange =
       }
 
 
-      if (allowance.enabled) {
+      if (
+        allowance.enabled
+      ) {
         reservedUploadSlots =
           files.length;
       }
@@ -1335,7 +1625,6 @@ mediaInput.onchange =
 
 
         try {
-
           const isPhoto =
             file.type.startsWith(
               "image/"
@@ -1392,13 +1681,13 @@ mediaInput.onchange =
 
 
             // -----------------------------------------------
-            // UPLOAD PHOTO TO CLOUDINARY
+            // UPLOAD PHOTO TO R2
             // -----------------------------------------------
 
-            const cloudinaryData =
-              await uploadFileToCloudinary(
+            const r2Photo =
+              await uploadFileToR2(
                 stillImage,
-                "image"
+                "photo"
               );
 
 
@@ -1414,10 +1703,28 @@ mediaInput.onchange =
                 .from("photos")
                 .insert({
                   image_url:
-                    cloudinaryData.secure_url,
+                    null,
 
                   cloudinary_id:
-                    cloudinaryData.public_id,
+                    null,
+
+                  video_url:
+                    null,
+
+                  video_cloudinary_id:
+                    null,
+
+                  video_thumbnail_url:
+                    null,
+
+                  r2_object_key:
+                    r2Photo.objectKey,
+
+                  r2_thumbnail_key:
+                    null,
+
+                  file_size_bytes:
+                    stillImage.size,
 
                   user_id:
                     currentUser.id,
@@ -1500,25 +1807,35 @@ mediaInput.onchange =
 
 
             // -----------------------------------------------
-            // UPLOAD VIDEO TO CLOUDINARY
+            // CREATE THUMBNAIL
             // -----------------------------------------------
 
-            const cloudinaryData =
-              await uploadVideoToCloudinary(
+            const thumbnailFile =
+              await createVideoThumbnail(
                 file
               );
 
 
             // -----------------------------------------------
-            // CREATE VIDEO THUMBNAIL
+            // UPLOAD VIDEO TO R2
             // -----------------------------------------------
 
-            const thumbnailUrl =
-              cloudinaryData.secure_url
-                .replace(
-                  /\.[^/.]+$/,
-                  ".jpg"
-                );
+            const r2Video =
+              await uploadFileToR2(
+                file,
+                "video"
+              );
+
+
+            // -----------------------------------------------
+            // UPLOAD THUMBNAIL TO R2
+            // -----------------------------------------------
+
+            const r2Thumbnail =
+              await uploadFileToR2(
+                thumbnailFile,
+                "thumbnail"
+              );
 
 
             // -----------------------------------------------
@@ -1539,13 +1856,19 @@ mediaInput.onchange =
                     null,
 
                   video_url:
-                    cloudinaryData.secure_url,
+                    null,
 
                   video_cloudinary_id:
-                    cloudinaryData.public_id,
+                    null,
 
                   video_thumbnail_url:
-                    thumbnailUrl,
+                    null,
+
+                  r2_object_key:
+                    r2Video.objectKey,
+
+                  r2_thumbnail_key:
+                    r2Thumbnail.objectKey,
 
                   video_duration_seconds:
                     Math.round(
@@ -1604,14 +1927,9 @@ mediaInput.onchange =
           failedCount++;
 
 
-          console.log(
+          console.error(
             `UPLOAD ERROR FOR ${file.name}:`,
             error
-          );
-
-
-          console.log(
-            error.message
           );
 
 
@@ -1691,7 +2009,7 @@ mediaInput.onchange =
         showToast(
           `${uploadedParts.join(
             " and "
-          )} uploaded successfully! 📸🎥`
+          )} uploaded successfully!`
         );
 
       } else if (
@@ -1750,10 +2068,11 @@ mediaInput.onchange =
         false;
 
       uploadButton.textContent =
-        "Upload Photos or Videos 📸🎥";
+        "Upload Photos or Videos";
     }
   };
-
+            
+    
 // ============================================================
 // PHOTO VIEWER
 // ============================================================
