@@ -2532,8 +2532,8 @@ async function loadGallery(
       status,
       created_at,
       caption,
-      cloudinary_id,
-      video_cloudinary_id,
+      r2_object_key,
+      r2_thumbnail_key,
       uploader:family_members (
         name,
         initials,
@@ -2561,6 +2561,66 @@ async function loadGallery(
 
     return;
   }
+
+  // ------------------------------------------------------------
+// CREATE TEMPORARY R2 VIEWING URLS
+// ------------------------------------------------------------
+
+try {
+  const r2Keys =
+    data.flatMap(
+      media => [
+        media.r2_object_key,
+        media.r2_thumbnail_key
+      ]
+    );
+
+
+  const r2Urls =
+    await getR2ReadUrls(
+      r2Keys
+    );
+
+
+  data.forEach(
+    media => {
+      if (
+        media.media_type ===
+        "video"
+      ) {
+        media.video_url =
+          r2Urls[
+            media.r2_object_key
+          ] || null;
+
+        media.video_thumbnail_url =
+          r2Urls[
+            media.r2_thumbnail_key
+          ] || null;
+
+      } else {
+        media.image_url =
+          r2Urls[
+            media.r2_object_key
+          ] || null;
+      }
+    }
+  );
+
+} catch (error) {
+  console.error(
+    "R2 MEDIA URL ERROR:",
+    error
+  );
+
+
+  showToast(
+    "The album media could not be loaded.",
+    "error"
+  );
+
+  return;
+}
 
   galleryPhotos =
     data;
