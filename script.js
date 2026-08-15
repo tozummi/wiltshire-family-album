@@ -1438,6 +1438,124 @@ async function releaseDailyUploadSlots(
   await loadDailyUploadStatus();
 }
 
+// ============================================================
+// R2 STORAGE METER
+// ============================================================
+
+const albumStoragePercent =
+  document.getElementById(
+    "album-storage-percent"
+  );
+
+const albumStorageFill =
+  document.getElementById(
+    "album-storage-fill"
+  );
+
+const albumStorageDetail =
+  document.getElementById(
+    "album-storage-detail"
+  );
+
+
+function formatStorageGB(
+  gb
+) {
+  if (
+    gb < 0.01
+  ) {
+    return `${(
+      gb * 1000
+    ).toFixed(1)} MB`;
+  }
+
+
+  return `${gb.toFixed(2)} GB`;
+}
+
+
+async function loadR2StorageUsage() {
+  try {
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "r2-usage",
+          {
+            body: {}
+          }
+        );
+
+
+    if (
+      error ||
+      !data?.success
+    ) {
+      throw new Error(
+        data?.error ||
+        "Storage usage could not be loaded."
+      );
+    }
+
+
+    const percent =
+      Number(
+        data.percentUsed
+      ) || 0;
+
+    const totalGB =
+      Number(
+        data.totalGB
+      ) || 0;
+
+
+    if (
+      albumStoragePercent
+    ) {
+      albumStoragePercent.textContent =
+        `${percent.toFixed(1)}%`;
+    }
+
+
+    if (
+      albumStorageFill
+    ) {
+      albumStorageFill.style.width =
+        `${Math.min(
+          percent,
+          100
+        )}%`;
+    }
+
+
+    if (
+      albumStorageDetail
+    ) {
+      albumStorageDetail.textContent =
+        `${formatStorageGB(
+          totalGB
+        )} of 10 GB used`;
+    }
+
+  } catch (error) {
+    console.error(
+      "R2 STORAGE METER ERROR:",
+      error
+    );
+
+
+    if (
+      albumStorageDetail
+    ) {
+      albumStorageDetail.textContent =
+        "Storage usage unavailable";
+    }
+  }
+}
+
 
 // ============================================================
 // PHOTO AND VIDEO UPLOAD HANDLER
