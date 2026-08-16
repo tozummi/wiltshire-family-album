@@ -1866,11 +1866,11 @@ async function deleteSelectedAdminMedia() {
 
     await loadAdminMedia();
 
+    await loadAdminR2StorageUsage();
+
     await loadDashboardStatistics();
 
     await loadRecentActivity();
-
-    await loadAdminR2StorageUsage();
 
 
     if (
