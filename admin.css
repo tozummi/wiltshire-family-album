@@ -1620,3 +1620,15 @@ button {
 
   font-size: 14px;
 }
+
+/* ==========================================================
+   ALBUM STORAGE SECTION SPACING
+========================================================== */
+
+.admin-storage-card {
+  margin-top: 8px;
+}
+
+.dashboard-section:has(.admin-storage-card) {
+  margin-top: 32px;
+}
